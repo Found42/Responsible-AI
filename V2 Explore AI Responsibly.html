@@ -7,6 +7,11 @@
     <title>Exploring AI Responsibly | Interactive Student Lab</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Wistia Player Scripts -->
+    <script src="https://fast.wistia.com/player.js" async></script>
+    <script src="https://fast.wistia.com/embed/be0ruvkjze.js" async type="module"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
 
@@ -420,7 +425,32 @@
             position: relative;
         }
 
-        /* CSS Art for Video/Image Simulation */
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* Wistia Style */
+        wistia-player[media-id='be0ruvkjze']:not(:defined) {
+            background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/be0ruvkjze/swatch');
+            display: block;
+            filter: blur(5px);
+            padding-top: 56.25%;
+        }
+
+        /* CSS Art for Image Simulation (Video uses Wistia now) */
         .sun {
             width: 50px;
             height: 50px;
@@ -450,23 +480,6 @@
 
             to {
                 transform: translateY(-10px);
-            }
-        }
-
-        .typing-cursor::after {
-            content: '|';
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0;
             }
         }
     </style>
@@ -518,12 +531,14 @@
                 Exploring AI Responsibly <br>
                 <span class="gradient-text text-4xl md:text-5xl">Interactive Student Lab</span>
             </h1>
-            <p class="text-2xl text-gray-600 mb-8">How big is "Big Data"? How does AI think? And how do we find the
-                truth?</p>
+            <p class="text-2xl text-gray-600 mb-8">
+                How big is "Big Data"? How does AI think? And how do we find the truth?
+            </p>
             <div class="mt-8">
                 <button onclick="scrollToSection('quiz-section')"
-                    class="bg-blue-600 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-blue-700 transition shadow-lg animate-bounce-small">Start
-                    the Time Machine 🚀</button>
+                    class="bg-blue-600 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-blue-700 transition shadow-lg animate-bounce-small">
+                    Start the Time Machine 🚀
+                </button>
             </div>
         </div>
     </section>
@@ -536,10 +551,12 @@
                 <h2 class="text-4xl font-bold mt-2">The Time Machine Quiz</h2>
                 <p class="text-gray-600 mt-2">Google uses AI because the numbers are too big for humans.</p>
             </div>
+
             <div id="quiz-container" class="bg-white rounded-2xl shadow-xl overflow-hidden min-h-[500px] relative">
                 <div class="w-full bg-gray-200 h-2">
                     <div id="progress-bar" class="bg-blue-500 h-2 transition-all duration-500" style="width: 10%"></div>
                 </div>
+
                 <div class="p-8 md:p-12">
                     <!-- Q1 -->
                     <div id="q1" class="quiz-step fade-in">
@@ -659,7 +676,7 @@
                             <div>
                                 <h4 class="font-bold text-purple-700">Machine Learning (AI)</h4>
                                 <p class="text-sm text-gray-600 mt-1">You feed it data (patterns). It learns to
-                                    understand <em>intent</em>.</p>
+                                    understand <em>intent</em>, even for searches it has never seen before.</p>
                             </div>
                         </div>
                     </div>
@@ -680,8 +697,7 @@
             </div>
             <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
                 <div class="chart-container relative w-full h-80 bg-gray-50 rounded-lg border border-gray-200 mb-4">
-                    <canvas id="mlChart"></canvas>
-                </div>
+                    <canvas id="mlChart"></canvas></div>
                 <button onclick="trainModel()"
                     class="bg-indigo-600 text-white px-8 py-3 rounded-full font-bold hover:bg-indigo-700 transition shadow-lg">Train
                     Model (Find the Line) 🧠</button>
@@ -846,8 +862,7 @@
                     <div class="text-4xl mb-4">🎵 + 💻</div>
                     <h3 class="text-xl font-bold mb-4">Explicit Instructions</h3>
                     <p class="text-gray-700 text-lg leading-relaxed">In EarSketch, you write a script with
-                        <strong>explicit instructions</strong> on which sound to play and when.
-                    </p>
+                        <strong>explicit instructions</strong> on which sound to play and when.</p>
                 </div>
                 <div class="lg:col-span-2">
                     <div class="iframe-container bg-black"><iframe
@@ -868,8 +883,7 @@
                         MusicFX ↗</a>
                     <h2 class="text-5xl font-bold mt-2 mb-6">Generative AI Mixer</h2>
                     <p class="text-xl text-gray-300 mb-8">Traditional Coding follows rules. Generative AI
-                        <strong>creates</strong> based on patterns.
-                    </p>
+                        <strong>creates</strong> based on patterns.</p>
                     <div class="grid grid-cols-2 gap-4">
                         <div class="bg-gray-700 bg-opacity-50 p-4 rounded-lg border border-gray-600">
                             <h4 class="font-bold text-blue-400">Predictive AI</h4>
@@ -981,9 +995,8 @@
                 </div>
                 <div class="bg-purple-50 p-8 rounded-2xl border border-purple-100">
                     <h3 class="text-2xl font-bold text-purple-900 mb-4">Connecting Words to Sound</h3>
-                    <p class="text-gray-700 mb-4 leading-relaxed">Just like ChatGPT reads text to learn words,
-                        <strong>MusicFX</strong> listens to sound files with labels to learn patterns.
-                    </p>
+                    <p class="text-gray-700 mb-4 leading-relaxed">Just like Gemini reads text to learn words,
+                        <strong>MusicFX</strong> listens to sound files with labels to learn patterns.</p>
                 </div>
             </div>
         </div>
@@ -1217,7 +1230,7 @@
             'ai': { title: 'Artificial Intelligence (AI)', desc: 'The big umbrella! Any technique that enables computers to mimic human intelligence.', example: 'Example: A video game enemy that knows how to follow you.' },
             'ml': { title: 'Machine Learning (ML)', desc: 'A subset of AI. It gives computers the ability to learn without being explicitly programmed.', example: 'Example: Your email spam filter.' },
             'dl': { title: 'Deep Learning (DL)', desc: 'A subset of ML. It uses "Neural Networks" inspired by the human brain to learn huge amounts of data.', example: 'Example: Face ID unlocking your phone.' },
-            'gen': { title: 'Generative AI', desc: 'A subset of DL. It doesn\'t just analyze data, it CREATES new data (images, text, audio).', example: 'Example: ChatGPT, MusicFX.' }
+            'gen': { title: 'Generative AI', desc: 'A subset of DL. It doesn\'t just analyze data, it CREATES new data (images, text, audio).', example: 'Example: Gemini, MusicFX.' }
         };
         function selectHierarchy(key) {
             document.querySelectorAll('.circle').forEach(c => c.classList.remove('active'));
@@ -1251,10 +1264,12 @@
                 resultBox.innerHTML = '<div class="font-mono text-green-400 text-lg typing-cursor">Metal heart beats slow,<br>Wires hum a quiet tune,<br>Life in circuits flows.</div>';
             } else if (mode === 'image') {
                 promptSpan.innerText = "A futuristic city at sunset.";
-                resultBox.innerHTML = '<div class="w-full h-full bg-gradient-to-br from-indigo-900 to-purple-800 relative flex items-center justify-center overflow-hidden border-4 border-white"><div class="sun"></div><div class="mountain"></div><div class="text-white z-10 text-4xl font-bold drop-shadow-lg">FUTURE CITY</div></div>';
+                // Updated Image Link with Crop Resize Parameter for better quality
+                resultBox.innerHTML = '<img src="https://fast.wistia.com/embed/medias/7j55nnc12t/swatch?image_crop_resized=1280x720" class="w-full h-full object-cover rounded-lg shadow-lg" />';
             } else if (mode === 'video') {
-                promptSpan.innerText = "A rocket launching into space.";
-                resultBox.innerHTML = '<div class="w-full h-full bg-black relative overflow-hidden flex items-end justify-center"><div style="font-size:5rem; animation: rise 2s infinite ease-in;">🚀</div><div class="absolute w-full h-1 bg-white bottom-10 animate-pulse"></div></div>';
+                promptSpan.innerText = "Generate a cinematic video."; // Updated Prompt
+                // REPLACED: CSS Animation -> Wistia Player
+                resultBox.innerHTML = '<wistia-player media-id="be0ruvkjze" aspect="1.7777777777777777"></wistia-player>';
             } else if (mode === 'code') {
                 promptSpan.innerText = "Create a blue button.";
                 resultBox.innerHTML = '<div class="flex flex-col items-center gap-4"><div class="bg-gray-800 p-2 rounded text-xs font-mono text-gray-300 w-full">button {<br>&nbsp;&nbsp;background: blue;<br>&nbsp;&nbsp;color: white;<br>}</div><button class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition transform hover:scale-110 shadow-xl">I AM ALIVE!</button></div>';
