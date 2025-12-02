@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI, Truth, & The Future | Student Presentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            color: #1f2937;
+        }
+
+        .slide-section {
+            min-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 2rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .interactive-card {
+            transition: all 0.3s ease;
+        }
+
+        .interactive-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-image: linear-gradient(to right, #4285F4, #DB4437, #F4B400, #0F9D58);
+        }
+
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #d1d5db;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .nav-dot.active {
+            background-color: #4285F4;
+            transform: scale(1.2);
+        }
+
+        /* Chart Container Styling - Mandatory */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            /* Max width constraint */
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            /* Base height */
+            max-height: 500px;
+        }
+
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+            }
+        }
+
+        /* Custom Animations */
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(66, 133, 244, 0.7);
+            }
+
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 10px rgba(66, 133, 244, 0);
+            }
+
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(66, 133, 244, 0);
+            }
+        }
+
+        .pulse-btn {
+            animation: pulse-ring 2s infinite;
+        }
+
+        .verification-badge {
+            display: none;
+        }
+
+        .verification-badge.visible {
+            display: inline-flex;
+            animation: fadeIn 0.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation Dots -->
+    <div class="fixed right-5 top-1/2 transform -translate-y-1/2 z-50 flex flex-col gap-4 hidden md:flex">
+        <div class="nav-dot active" onclick="scrollToSection('hero')"></div>
+        <div class="nav-dot" onclick="scrollToSection('scale')"></div>
+        <div class="nav-dot" onclick="scrollToSection('search-ai')"></div>
+        <div class="nav-dot" onclick="scrollToSection('gen-ai')"></div>
+        <div class="nav-dot" onclick="scrollToSection('skepticism')"></div>
+        <div class="nav-dot" onclick="scrollToSection('triangulation')"></div>
+        <div class="nav-dot" onclick="scrollToSection('responsibility')"></div>
+    </div>
+
+    <!-- HERO SECTION -->
+    <section id="hero" class="slide-section bg-white text-center">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-6xl font-extrabold mb-6 tracking-tight">
+                Exploring <span class="gradient-text">Artificial Intelligence</span>
+            </h1>
+            <p class="text-2xl text-gray-600 mb-8">
+                From finding answers to creating worlds... and how to tell what's true.
+            </p>
+            <div class="p-6 bg-blue-50 rounded-xl border border-blue-100 inline-block text-left max-w-2xl">
+                <h3 class="text-blue-800 font-bold mb-2">👋 Welcome, Future Innovators!</h3>
+                <p class="text-blue-700">Today we're going to explore Google's history with AI, play with some
+                    mind-blowing numbers, and learn how to think like a scientist when exploring the internet.</p>
+            </div>
+            <div class="mt-12">
+                <button onclick="scrollToSection('scale')"
+                    class="bg-gray-900 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-700 transition pulse-btn">
+                    Let's Start with a Puzzle ↓
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 1: THE SCALE OF DATA (Why AI?) -->
+    <section id="scale" class="slide-section bg-slate-50">
+        <div class="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+                <span class="text-sm font-bold text-red-500 tracking-wider uppercase">The "Why" of AI</span>
+                <h2 class="text-4xl font-bold mt-2 mb-6">Can you imagine "Big" Data?</h2>
+                <p class="text-lg text-gray-700 mb-6 leading-relaxed">
+                    Google Search uses AI because the amount of information is impossible for humans to sort manually.
+                    To understand AI, we first need to wrap our heads around <strong>massive numbers</strong>.
+                </p>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <p class="font-bold text-gray-800 mb-4">Let's look at seconds...</p>
+                    <ul class="space-y-4">
+                        <li class="flex items-center gap-3">
+                            <span
+                                class="w-8 h-8 rounded-full bg-green-100 text-green-700 flex items-center justify-center font-bold">1</span>
+                            <span>1 Million Seconds = <strong class="text-green-600">~11 Days</strong></span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span
+                                class="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold">2</span>
+                            <span>1 Billion Seconds = <strong class="text-blue-600">~31 Years</strong></span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span
+                                class="w-8 h-8 rounded-full bg-red-100 text-red-700 flex items-center justify-center font-bold">3</span>
+                            <span>1 Trillion Seconds = <strong class="text-red-600">~31,000 Years</strong></span>
+                        </li>
+                    </ul>
+                </div>
+                <p class="text-sm text-gray-500 mt-4 italic">Source: "Google - A History as an AI Company"</p>
+            </div>
+            <div class="bg-white p-4 rounded-2xl shadow-lg">
+                <h3 class="text-center font-bold text-gray-500 mb-2">Visualizing the Scale (Logarithmic)</h3>
+                <div class="chart-container">
+                    <canvas id="timeScaleChart"></canvas>
+                </div>
+                <div class="text-center mt-4">
+                    <p class="text-xs text-gray-400">Google handles 5 Trillion searches a year. Imagine writing rules
+                        for that!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 2: THE 15% PROBLEM (Traditional vs AI) -->
+    <section id="search-ai" class="slide-section bg-white">
+        <div class="max-w-5xl mx-auto w-full">
+            <div class="text-center mb-12">
+                <span class="text-sm font-bold text-blue-500 tracking-wider uppercase">Rules vs. Patterns</span>
+                <h2 class="text-4xl font-bold mt-2">Why can't we just code the answers?</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                <!-- The 15% Problem -->
+                <div class="bg-blue-50 rounded-2xl p-8 flex flex-col items-center text-center">
+                    <h3 class="text-2xl font-bold text-blue-900 mb-4">The "New" Query Problem</h3>
+                    <p class="text-blue-800 mb-6">Every single day, 15% of all searches on Google have <strong>never
+                            been seen before</strong>.</p>
+                    <div class="chart-container" style="height: 250px;">
+                        <canvas id="newSearchChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- The Solution -->
+                <div class="bg-gray-50 rounded-2xl p-8 border border-gray-200">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Old Coding vs. AI</h3>
+
+                    <div class="space-y-6">
+                        <!-- Traditional -->
+                        <div class="group cursor-pointer">
+                            <div class="flex items-center gap-4 mb-2">
+                                <div class="bg-gray-200 p-2 rounded text-xl">📜</div>
+                                <h4 class="font-bold">Traditional Programming</h4>
+                            </div>
+                            <div class="pl-14 text-sm text-gray-600 border-l-2 border-gray-300">
+                                You write specific rules: <br>
+                                <code class="bg-gray-100 px-1">If user types "cat", show cat.jpg</code>
+                                <br>
+                                <em>Problem: You can't write rules for things you haven't seen!</em>
+                            </div>
+                        </div>
+
+                        <!-- AI -->
+                        <div class="group cursor-pointer">
+                            <div class="flex items-center gap-4 mb-2">
+                                <div class="bg-purple-100 p-2 rounded text-xl">🧠</div>
+                                <h4 class="font-bold text-purple-700">Machine Learning (AI)</h4>
+                            </div>
+                            <div class="pl-14 text-sm text-gray-600 border-l-2 border-purple-300">
+                                You feed it data (patterns): <br>
+                                <code class="bg-purple-50 px-1">Learn what "cat" looks like from 1M photos.</code>
+                                <br>
+                                <em>Result: It can recognize a cat it has never seen before.</em>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center bg-yellow-50 p-6 rounded-xl border border-yellow-200">
+                <p class="font-bold text-yellow-800">
+                    "You can't write a program with step-by-step rules for something that's never happened."
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 3: GENERATIVE AI (Creating vs Finding) -->
+    <section id="gen-ai" class="slide-section bg-gradient-to-br from-gray-900 to-gray-800 text-white">
+        <div class="max-w-6xl mx-auto w-full">
+            <div class="flex flex-col md:flex-row gap-12 items-center">
+                <div class="md:w-1/2">
+                    <span class="bg-purple-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">The
+                        New Era</span>
+                    <h2 class="text-5xl font-bold mt-4 mb-6">Generative AI</h2>
+                    <p class="text-xl text-gray-300 mb-8">
+                        Traditional AI (like Search or Netflix recommendations) <strong>finds</strong> the best option
+                        for you. <br><br>
+                        Generative AI (like Gemini, MusicFX) <strong>creates</strong> something brand new that never
+                        existed.
+                    </p>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-gray-700 bg-opacity-50 p-4 rounded-lg border border-gray-600">
+                            <h4 class="font-bold text-blue-400">Predictive AI</h4>
+                            <p class="text-sm text-gray-400 mt-2">"Here is the video you probably want to watch next."
+                            </p>
+                        </div>
+                        <div class="bg-purple-900 bg-opacity-50 p-4 rounded-lg border border-purple-500">
+                            <h4 class="font-bold text-purple-300">Generative AI</h4>
+                            <p class="text-sm text-gray-300 mt-2">"Here is a brand new image of a cat playing a
+                                saxophone in space."</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="md:w-1/2">
+                    <!-- Interactive Demo Placeholder -->
+                    <div class="bg-white text-gray-900 rounded-2xl p-6 shadow-2xl">
+                        <h3 class="text-xl font-bold mb-4">Try the Concept: MusicFX</h3>
+                        <p class="text-sm text-gray-600 mb-4">Imagine combining two distinct concepts to create a new
+                            sound.</p>
+
+                        <div class="flex gap-4 mb-6 justify-center">
+                            <button id="beat1" class="px-4 py-2 bg-gray-200 rounded-full hover:bg-gray-300 transition"
+                                onclick="toggleBeat('beat1')">🥁 Hip Hop Beat</button>
+                            <span class="self-center font-bold">+</span>
+                            <button id="beat2" class="px-4 py-2 bg-gray-200 rounded-full hover:bg-gray-300 transition"
+                                onclick="toggleBeat('beat2')">🎻 Violin Solo</button>
+                        </div>
+
+                        <div id="gen-result"
+                            class="h-32 bg-gray-100 rounded-xl flex items-center justify-center border-2 border-dashed border-gray-300 transition-colors duration-500">
+                            <p class="text-gray-400 font-bold">Select inputs to generate...</p>
+                        </div>
+                        <p class="text-xs text-center mt-2 text-gray-400">Simulated Logic</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 4: SCIENTIFIC SKEPTICISM (Neil deGrasse Tyson Concept) -->
+    <section id="skepticism" class="slide-section bg-slate-50">
+        <div class="max-w-4xl mx-auto text-center">
+            <div class="inline-block p-3 bg-white rounded-full shadow-md mb-6">
+                <span class="text-3xl">🔭</span>
+            </div>
+            <h2 class="text-4xl font-bold mb-6">Thinking Like a Scientist</h2>
+            <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+                Astrophysicist Neil deGrasse Tyson says that science isn't just a collection of facts—it's a way of
+                looking at the world. It's about <strong>evidence</strong>.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+                <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-red-500">
+                    <h3 class="font-bold text-lg mb-2">Question Authority</h3>
+                    <p class="text-sm text-gray-600">Just because a "smart" computer (AI) said it, doesn't mean it's
+                        true. AI can "hallucinate" (make things up).</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-yellow-500">
+                    <h3 class="font-bold text-lg mb-2">Demand Evidence</h3>
+                    <p class="text-sm text-gray-600">Don't accept a claim until you can verify where it came from. What
+                        is the source?</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-green-500">
+                    <h3 class="font-bold text-lg mb-2">Triangulate</h3>
+                    <p class="text-sm text-gray-600">Like GPS needs satellites to find you, you need multiple sources to
+                        find the truth.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 5: SOURCE TRIANGULATION LAB (Interactive) -->
+    <section id="triangulation" class="slide-section bg-white border-4 border-blue-50">
+        <div class="max-w-5xl mx-auto w-full">
+            <div class="text-center mb-8">
+                <h2 class="text-4xl font-bold text-blue-900">Lab: Source Triangulation</h2>
+                <p class="text-gray-600">Use the tool below to verify the suspicious claim. You need 3 data points.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- The Suspicious Claim -->
+                <div class="lg:col-span-1">
+                    <div
+                        class="bg-red-50 border-2 border-red-200 p-6 rounded-xl h-full flex flex-col justify-center items-center text-center relative overflow-hidden">
+                        <div class="absolute top-0 left-0 bg-red-200 text-red-800 text-xs font-bold px-2 py-1">
+                            UNVERIFIED POST</div>
+                        <div class="text-5xl mb-4">🦈</div>
+                        <h3 class="text-xl font-bold mb-2">"Sharks can live in volcanoes!"</h3>
+                        <p class="text-sm text-gray-600 mb-6">A random post on social media claims scientists found
+                            sharks swimming in active lava.</p>
+                        <div id="status-indicator"
+                            class="px-4 py-2 bg-gray-300 text-gray-600 font-bold rounded-full text-sm">
+                            Status: Unverified
+                        </div>
+                    </div>
+                </div>
+
+                <!-- The Triangulation Engine -->
+                <div class="lg:col-span-2">
+                    <div class="bg-gray-900 text-white p-8 rounded-xl shadow-2xl">
+                        <h3 class="font-bold text-xl mb-6 border-b border-gray-700 pb-2">Verification Console</h3>
+
+                        <div class="grid grid-cols-1 gap-4">
+                            <!-- Tool 1 -->
+                            <div id="tool-1"
+                                class="bg-gray-800 p-4 rounded-lg flex justify-between items-center opacity-50 hover:opacity-100 transition cursor-pointer"
+                                onclick="verifyStep(1)">
+                                <div>
+                                    <h4 class="font-bold text-blue-400">1. About This Source</h4>
+                                    <p class="text-xs text-gray-400">Who wrote this? Is "SharkLavaLover99" an expert?
+                                    </p>
+                                </div>
+                                <div
+                                    class="check-mark w-8 h-8 rounded-full border-2 border-gray-600 flex items-center justify-center">
+                                    ?</div>
+                            </div>
+
+                            <!-- Tool 2 -->
+                            <div id="tool-2"
+                                class="bg-gray-800 p-4 rounded-lg flex justify-between items-center opacity-50 hover:opacity-100 transition cursor-pointer"
+                                onclick="verifyStep(2)">
+                                <div>
+                                    <h4 class="font-bold text-yellow-400">2. Find What Others Say</h4>
+                                    <p class="text-xs text-gray-400">Do National Geographic or BBC report this?</p>
+                                </div>
+                                <div
+                                    class="check-mark w-8 h-8 rounded-full border-2 border-gray-600 flex items-center justify-center">
+                                    ?</div>
+                            </div>
+
+                            <!-- Tool 3 -->
+                            <div id="tool-3"
+                                class="bg-gray-800 p-4 rounded-lg flex justify-between items-center opacity-50 hover:opacity-100 transition cursor-pointer"
+                                onclick="verifyStep(3)">
+                                <div>
+                                    <h4 class="font-bold text-green-400">3. Check the Image Context</h4>
+                                    <p class="text-xs text-gray-400">Is the photo real or AI-generated?</p>
+                                </div>
+                                <div
+                                    class="check-mark w-8 h-8 rounded-full border-2 border-gray-600 flex items-center justify-center">
+                                    ?</div>
+                            </div>
+                        </div>
+
+                        <div id="final-verdict" class="mt-6 p-4 bg-gray-800 rounded-lg text-center hidden">
+                            <p class="text-green-400 font-bold text-lg mb-1">TRIANGULATION COMPLETE</p>
+                            <p class="text-sm text-gray-300">Verdict: While sharks (like the Sleeper Shark) act weird,
+                                they cannot swim in lava. The image was AI generated. <br><strong>Claim
+                                    Debunked.</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 6: RESPONSIBILITY & FAMILY -->
+    <section id="responsibility" class="slide-section bg-yellow-50">
+        <div class="max-w-4xl mx-auto w-full">
+            <div class="text-center mb-10">
+                <span class="text-sm font-bold text-yellow-600 tracking-wider uppercase">Exploring Together</span>
+                <h2 class="text-4xl font-bold mt-2">Responsible AI Use</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Card 1 -->
+                <div class="bg-white p-8 rounded-xl shadow-md border-b-4 border-blue-500">
+                    <h3 class="text-2xl font-bold mb-4 text-gray-800">For Students 🎓</h3>
+                    <ul class="space-y-3 text-gray-600">
+                        <li class="flex items-start gap-2">
+                            <span>✅</span> <span>Use AI to <strong>brainstorm</strong> ideas, not to write your essay
+                                for you.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span>✅</span> <span>Always checking facts (Triangulate!).</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span>✅</span> <span>If you see something scary or weird, tell an adult.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="bg-white p-8 rounded-xl shadow-md border-b-4 border-green-500">
+                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Family Conversations 🏠</h3>
+                    <p class="text-sm text-gray-500 mb-4">Take these questions home:</p>
+                    <div class="space-y-4">
+                        <div class="bg-green-50 p-4 rounded-lg text-green-800 font-medium">
+                            "If you could invent a new technology to help you explore, what would it be?"
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-lg text-green-800 font-medium">
+                            "How can we tell if a video on YouTube is real or made by AI?"
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-12 text-center">
+                <p class="text-gray-500 italic">"Be curious. Be skeptical. Be creative."</p>
+                <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
+                    class="mt-8 text-blue-600 hover:underline">Back to Top</button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Smooth Scrolling Function
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+            updateNavDots(id);
+        }
+
+        function updateNavDots(activeId) {
+            document.querySelectorAll('.nav-dot').forEach(dot => dot.classList.remove('active'));
+            // Logic to highlight current dot based on scroll position could be added here
+        }
+
+        // --- CHART 1: TIME SCALE (Logarithmic) ---
+        // Visualizing 1 million vs 1 billion vs 1 trillion
+        const ctxTime = document.getElementById('timeScaleChart').getContext('2d');
+        const timeScaleChart = new Chart(ctxTime, {
+            type: 'bar',
+            data: {
+                labels: ['1 Million Seconds', '1 Billion Seconds', '1 Trillion Seconds'],
+                datasets: [{
+                    label: 'Years (Approx)',
+                    data: [0.03, 31, 31000], // 11 days is roughly 0.03 years
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.6)', // Green
+                        'rgba(54, 162, 235, 0.6)', // Blue
+                        'rgba(255, 99, 132, 0.6)'  // Red
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 99, 132, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y', // Horizontal bar chart better for scale
+                scales: {
+                    x: {
+                        type: 'logarithmic',
+                        title: { display: true, text: 'Years (Logarithmic Scale)' },
+                        min: 0.01
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                let raw = context.raw;
+                                if (raw < 1) return "About 11 Days";
+                                if (raw === 31) return "31 Years";
+                                if (raw === 31000) return "31,709 Years (Prehistoric Times!)";
+                            }
+                        }
+                    },
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // --- CHART 2: NEW SEARCHES (Donut) ---
+        const ctxSearch = document.getElementById('newSearchChart').getContext('2d');
+        const newSearchChart = new Chart(ctxSearch, {
+            type: 'doughnut',
+            data: {
+                labels: ['Known Queries', 'Brand New Queries (15%)'],
+                datasets: [{
+                    data: [85, 15],
+                    backgroundColor: ['#e5e7eb', '#4285F4'],
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+
+        // --- INTERACTION: GENERATIVE AI MIXER ---
+        let beat1Active = false;
+        let beat2Active = false;
+
+        function toggleBeat(id) {
+            const btn = document.getElementById(id);
+            const resultBox = document.getElementById('gen-result');
+
+            if (id === 'beat1') beat1Active = !beat1Active;
+            if (id === 'beat2') beat2Active = !beat2Active;
+
+            // Update Button Styles
+            if ((id === 'beat1' && beat1Active) || (id === 'beat2' && beat2Active)) {
+                btn.classList.remove('bg-gray-200');
+                btn.classList.add('bg-purple-600', 'text-white');
+            } else {
+                btn.classList.add('bg-gray-200');
+                btn.classList.remove('bg-purple-600', 'text-white');
+            }
+
+            // Update Result Box
+            if (beat1Active && beat2Active) {
+                resultBox.innerHTML = '<span class="text-2xl font-bold text-purple-600 animate-pulse">✨ Generating: "Hip-Hop Violin Fusion" 🎶</span>';
+                resultBox.className = "h-32 bg-purple-50 rounded-xl flex items-center justify-center border-2 border-purple-500 shadow-inner";
+            } else if (beat1Active) {
+                resultBox.innerHTML = '<span class="text-gray-700 font-bold">Input: Hip Hop Beat...</span>';
+                resultBox.className = "h-32 bg-gray-100 rounded-xl flex items-center justify-center border-2 border-gray-300";
+            } else if (beat2Active) {
+                resultBox.innerHTML = '<span class="text-gray-700 font-bold">Input: Violin Solo...</span>';
+                resultBox.className = "h-32 bg-gray-100 rounded-xl flex items-center justify-center border-2 border-gray-300";
+            } else {
+                resultBox.innerHTML = '<p class="text-gray-400 font-bold">Select inputs to generate...</p>';
+                resultBox.className = "h-32 bg-gray-100 rounded-xl flex items-center justify-center border-2 border-dashed border-gray-300";
+            }
+        }
+
+        // --- INTERACTION: TRIANGULATION GAME ---
+        let verificationSteps = [false, false, false];
+
+        function verifyStep(stepIndex) {
+            // Index correction (1-based to 0-based)
+            const idx = stepIndex - 1;
+
+            // Prevent re-clicking
+            if (verificationSteps[idx]) return;
+
+            verificationSteps[idx] = true;
+
+            // Visual Updates
+            const row = document.getElementById(`tool-${stepIndex}`);
+            row.classList.remove('opacity-50');
+            row.classList.add('bg-gray-700', 'border-l-4', 'border-green-400');
+
+            const check = row.querySelector('.check-mark');
+            check.innerHTML = "✓";
+            check.classList.add('bg-green-500', 'border-green-500');
+
+            // Check if all complete
+            if (verificationSteps.every(Boolean)) {
+                document.getElementById('final-verdict').classList.remove('hidden');
+                document.getElementById('final-verdict').classList.add('animate-bounce');
+                setTimeout(() => {
+                    document.getElementById('final-verdict').classList.remove('animate-bounce');
+                }, 1000);
+
+                const status = document.getElementById('status-indicator');
+                status.innerText = "Status: DEBUNKED";
+                status.classList.remove('bg-gray-300', 'text-gray-600');
+                status.classList.add('bg-green-500', 'text-white');
+            }
+        }
+
+        // --- SCROLL SPY FOR NAV DOTS ---
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('.slide-section');
+            const dots = document.querySelectorAll('.nav-dot');
+
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (scrollY >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            dots.forEach((dot, index) => {
+                dot.classList.remove('active');
+                if (sections[index].getAttribute('id') === current) {
+                    dot.classList.add('active');
+                }
+            });
+        });
+
+    </script>
+</body>
+
+</html>
