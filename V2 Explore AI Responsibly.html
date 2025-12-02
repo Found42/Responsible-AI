@@ -58,9 +58,11 @@
             font-size: 12px;
             z-index: 50;
             white-space: nowrap;
+            right: 20px;
+            top: 0;
         }
 
-        .nav-dot:hover+.tooltip {
+        .group:hover .tooltip {
             visibility: visible;
         }
 
@@ -200,7 +202,45 @@
             border-color: #3b82f6;
         }
 
-        /* Nested Circles Visualization (REFACTORED for Z-Index Safety) */
+        /* Search Bubble Visualization */
+        .search-bubble {
+            padding: 8px 12px;
+            border-radius: 20px;
+            background: #f1f3f4;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            margin: 4px;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: popIn 0.3s forwards;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            cursor: default;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .search-bubble.new-query {
+            background: #e8f0fe;
+            color: #1967d2;
+            border: 1px solid #1967d2;
+            font-weight: bold;
+            transform: scale(1.05);
+        }
+
+        .search-bubble:hover {
+            transform: scale(1.1);
+            z-index: 10;
+        }
+
+        @keyframes popIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Nested Circles Visualization */
         .circle-container {
             position: relative;
             width: 100%;
@@ -222,13 +262,11 @@
             background-color: rgba(255, 255, 255, 0.5);
         }
 
-        /* Hover effects */
         .circle:hover {
             transform: scale(1.02);
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
         }
 
-        /* Active State - Visuals ONLY, No Z-Index Changes to prevent blocking clicks */
         .circle.active {
             background-color: rgba(255, 255, 255, 0.9);
             box-shadow: 0 0 25px rgba(66, 133, 244, 0.4);
@@ -247,7 +285,6 @@
             pointer-events: none;
         }
 
-        /* Strict Layering: Outer at bottom, Inner on top */
         .c-ai {
             width: 380px;
             height: 380px;
@@ -347,6 +384,91 @@
                 transform: rotate(360deg);
             }
         }
+
+        /* Gen AI Capabilities Styles */
+        .cap-btn {
+            text-align: center;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border: 2px solid #e5e7eb;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .cap-btn:hover {
+            border-color: #4285F4;
+            transform: scale(1.05);
+        }
+
+        .cap-btn.active {
+            border-color: #4285F4;
+            background-color: #eff6ff;
+            box-shadow: 0 4px 6px -1px rgba(66, 133, 244, 0.2);
+        }
+
+        .cap-display {
+            height: 300px;
+            background: #1f2937;
+            border-radius: 1rem;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* CSS Art for Video/Image Simulation */
+        .sun {
+            width: 50px;
+            height: 50px;
+            background: #FDB813;
+            border-radius: 50%;
+            box-shadow: 0 0 20px #FDB813;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            animation: rise 4s infinite alternate;
+        }
+
+        .mountain {
+            width: 0;
+            height: 0;
+            border-left: 100px solid transparent;
+            border-right: 100px solid transparent;
+            border-bottom: 200px solid #4b5563;
+            position: absolute;
+            bottom: 0;
+        }
+
+        @keyframes rise {
+            from {
+                transform: translateY(0);
+            }
+
+            to {
+                transform: translateY(-10px);
+            }
+        }
+
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 
@@ -354,47 +476,37 @@
 
     <!-- Navigation Dots -->
     <div class="fixed right-5 top-1/2 transform -translate-y-1/2 z-50 flex flex-col gap-4 hidden md:flex items-end">
-        <div class="group flex items-center gap-2">
-            <span class="text-xs font-bold text-gray-500 opacity-0 group-hover:opacity-100 transition">Start</span>
+        <div class="group flex items-center gap-2 relative"><span class="tooltip">Start</span>
             <div class="nav-dot active" onclick="scrollToSection('hero')"></div>
         </div>
-        <div class="group flex items-center gap-2">
-            <span class="text-xs font-bold text-gray-500 opacity-0 group-hover:opacity-100 transition">Scale</span>
+        <div class="group flex items-center gap-2 relative"><span class="tooltip">Scale</span>
             <div class="nav-dot" onclick="scrollToSection('quiz-section')"></div>
         </div>
-        <div class="group flex items-center gap-2">
-            <span class="text-xs font-bold text-gray-500 opacity-0 group-hover:opacity-100 transition">15%
-                Problem</span>
+        <div class="group flex items-center gap-2 relative"><span class="tooltip">15% Problem</span>
             <div class="nav-dot" onclick="scrollToSection('search-ai')"></div>
         </div>
-        <div class="group flex items-center gap-2">
-            <span class="text-xs font-bold text-gray-500 opacity-0 group-hover:opacity-100 transition">ML Logic</span>
+        <div class="group flex items-center gap-2 relative"><span class="tooltip">ML Logic</span>
             <div class="nav-dot" onclick="scrollToSection('ml-logic')"></div>
         </div>
-        <div class="group flex items-center gap-2">
-            <span class="text-xs font-bold text-gray-500 opacity-0 group-hover:opacity-100 transition">Hierarchy</span>
+        <div class="group flex items-center gap-2 relative"><span class="tooltip">Hierarchy</span>
             <div class="nav-dot" onclick="scrollToSection('ai-hierarchy')"></div>
         </div>
-        <div class="group flex items-center gap-2">
-            <span class="text-xs font-bold text-gray-500 opacity-0 group-hover:opacity-100 transition">Types of
-                AI</span>
+        <div class="group flex items-center gap-2 relative"><span class="tooltip">Types of AI</span>
             <div class="nav-dot" onclick="scrollToSection('ai-comparison')"></div>
         </div>
-        <div class="group flex items-center gap-2">
-            <span
-                class="text-xs font-bold text-gray-500 opacity-0 group-hover:opacity-100 transition">Traditional</span>
+        <div class="group flex items-center gap-2 relative"><span class="tooltip">Capabilities</span>
+            <div class="nav-dot" onclick="scrollToSection('gen-capabilities')"></div>
+        </div>
+        <div class="group flex items-center gap-2 relative"><span class="tooltip">Traditional</span>
             <div class="nav-dot" onclick="scrollToSection('earsketch')"></div>
         </div>
-        <div class="group flex items-center gap-2">
-            <span class="text-xs font-bold text-gray-500 opacity-0 group-hover:opacity-100 transition">Generative</span>
+        <div class="group flex items-center gap-2 relative"><span class="tooltip">Generative</span>
             <div class="nav-dot" onclick="scrollToSection('gen-ai')"></div>
         </div>
-        <div class="group flex items-center gap-2">
-            <span class="text-xs font-bold text-gray-500 opacity-0 group-hover:opacity-100 transition">Training</span>
+        <div class="group flex items-center gap-2 relative"><span class="tooltip">Training</span>
             <div class="nav-dot" onclick="scrollToSection('training-data')"></div>
         </div>
-        <div class="group flex items-center gap-2">
-            <span class="text-xs font-bold text-gray-500 opacity-0 group-hover:opacity-100 transition">Skepticism</span>
+        <div class="group flex items-center gap-2 relative"><span class="tooltip">Skepticism</span>
             <div class="nav-dot" onclick="scrollToSection('skepticism')"></div>
         </div>
     </div>
@@ -406,14 +518,12 @@
                 Exploring AI Responsibly <br>
                 <span class="gradient-text text-4xl md:text-5xl">Interactive Student Lab</span>
             </h1>
-            <p class="text-2xl text-gray-600 mb-8">
-                How big is "Big Data"? How does AI think? And how do we find the truth?
-            </p>
+            <p class="text-2xl text-gray-600 mb-8">How big is "Big Data"? How does AI think? And how do we find the
+                truth?</p>
             <div class="mt-8">
                 <button onclick="scrollToSection('quiz-section')"
-                    class="bg-blue-600 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-blue-700 transition shadow-lg animate-bounce-small">
-                    Start the Time Machine 🚀
-                </button>
+                    class="bg-blue-600 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-blue-700 transition shadow-lg animate-bounce-small">Start
+                    the Time Machine 🚀</button>
             </div>
         </div>
     </section>
@@ -426,12 +536,10 @@
                 <h2 class="text-4xl font-bold mt-2">The Time Machine Quiz</h2>
                 <p class="text-gray-600 mt-2">Google uses AI because the numbers are too big for humans.</p>
             </div>
-
             <div id="quiz-container" class="bg-white rounded-2xl shadow-xl overflow-hidden min-h-[500px] relative">
                 <div class="w-full bg-gray-200 h-2">
                     <div id="progress-bar" class="bg-blue-500 h-2 transition-all duration-500" style="width: 10%"></div>
                 </div>
-
                 <div class="p-8 md:p-12">
                     <!-- Q1 -->
                     <div id="q1" class="quiz-step fade-in">
@@ -513,32 +621,45 @@
 
     <!-- SECTION 2: 15% PROBLEM -->
     <section id="search-ai" class="slide-section bg-white">
-        <div class="max-w-5xl mx-auto w-full">
+        <div class="max-w-6xl mx-auto w-full">
             <div class="text-center mb-12">
                 <span class="text-sm font-bold text-blue-500 tracking-wider uppercase">Rules vs. Patterns</span>
                 <h2 class="text-4xl font-bold mt-2">Why can't we just code the answers?</h2>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="bg-blue-50 rounded-2xl p-8 flex flex-col items-center text-center">
-                    <h3 class="text-2xl font-bold text-blue-900 mb-4">The "New" Query Problem</h3>
-                    <p class="text-blue-800 mb-6">Every day, 15% of all searches are <strong>brand new</strong>.</p>
-                    <div class="chart-container" style="height: 250px;"><canvas id="newSearchChart"></canvas></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                <div
+                    class="bg-blue-50 rounded-2xl p-6 flex flex-col items-center text-center shadow-inner border border-blue-100 min-h-[400px]">
+                    <h3 class="text-xl font-bold text-blue-900 mb-2">The "New" Query Problem</h3>
+                    <p class="text-sm text-blue-700 mb-4">Every day, 15% of searches are <strong>brand new</strong>.
+                        That's 1 in 6!</p>
+                    <div id="search-stream-container"
+                        class="flex flex-wrap justify-center content-start gap-2 w-full flex-grow overflow-hidden relative">
+                        <div class="text-gray-400 text-sm mt-10">Click 'Analyze' to see the stream...</div>
+                    </div>
+                    <button onclick="generateSearchStream()"
+                        class="mt-4 bg-blue-600 text-white px-6 py-2 rounded-full font-bold hover:bg-blue-700 transition shadow">Analyze
+                        Today's Searches 🔍</button>
                 </div>
-                <div class="bg-gray-50 rounded-2xl p-8 border border-gray-200">
+                <div class="bg-gray-50 rounded-2xl p-8 border border-gray-200 h-full">
                     <h3 class="text-2xl font-bold text-gray-900 mb-4">Old Coding vs. AI</h3>
                     <div class="space-y-6">
-                        <div class="flex items-center gap-4">
+                        <div class="flex items-start gap-4">
                             <div class="bg-gray-200 p-2 rounded text-xl">📜</div>
                             <div>
-                                <h4 class="font-bold">Traditional Code</h4>
-                                <p class="text-sm text-gray-600">Specific Rules: "If X, then Y."</p>
+                                <h4 class="font-bold">Traditional Programming</h4>
+                                <p class="text-sm text-gray-600 mt-1">You write specific rules: <br><code
+                                        class="bg-gray-100 px-1 rounded text-xs">If user types "cat", show cat.jpg</code>
+                                </p>
+                                <p class="text-xs text-red-500 mt-2 font-bold">Problem: You can't write rules for things
+                                    you've never seen!</p>
                             </div>
                         </div>
-                        <div class="flex items-center gap-4">
+                        <div class="flex items-start gap-4">
                             <div class="bg-purple-100 p-2 rounded text-xl">🧠</div>
                             <div>
-                                <h4 class="font-bold text-purple-700">Machine Learning</h4>
-                                <p class="text-sm text-gray-600">Learns patterns from data.</p>
+                                <h4 class="font-bold text-purple-700">Machine Learning (AI)</h4>
+                                <p class="text-sm text-gray-600 mt-1">You feed it data (patterns). It learns to
+                                    understand <em>intent</em>.</p>
                             </div>
                         </div>
                     </div>
@@ -547,35 +668,35 @@
         </div>
     </section>
 
-    <!-- SECTION: ML LOGIC VISUALIZATION -->
+    <!-- SECTION: ML LOGIC VISUALIZATION (FIXED: SEPARATION LINE) -->
     <section id="ml-logic" class="slide-section bg-slate-50">
         <div class="max-w-4xl mx-auto w-full">
             <div class="text-center mb-8">
                 <span class="text-sm font-bold text-indigo-600 tracking-wider uppercase">How Machine Learning
                     Works</span>
                 <h2 class="text-4xl font-bold mt-2">Finding the Line</h2>
-                <p class="text-gray-600 mt-2">Traditional code needs rules. Machine Learning finds the rule itself.</p>
+                <p class="text-gray-600 mt-2">Machine Learning finds a boundary to separate the groups (Classification).
+                </p>
             </div>
             <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
                 <div class="chart-container relative w-full h-80 bg-gray-50 rounded-lg border border-gray-200 mb-4">
-                    <canvas id="mlChart"></canvas></div>
+                    <canvas id="mlChart"></canvas>
+                </div>
                 <button onclick="trainModel()"
                     class="bg-indigo-600 text-white px-8 py-3 rounded-full font-bold hover:bg-indigo-700 transition shadow-lg">Train
-                    Model (Find the Pattern) 🧠</button>
+                    Model (Find the Line) 🧠</button>
                 <p id="ml-feedback" class="mt-4 text-center text-gray-500 italic">Click "Train Model" to see the AI
                     separate the data.</p>
             </div>
         </div>
     </section>
 
-    <!-- SECTION: AI HIERARCHY (FIXED INTERACTION) -->
+    <!-- SECTION: AI HIERARCHY -->
     <section id="ai-hierarchy" class="slide-section bg-white">
         <div class="max-w-4xl mx-auto w-full text-center">
             <span class="text-sm font-bold text-green-600 tracking-wider uppercase">The AI Family Tree</span>
             <h2 class="text-4xl font-bold mt-2 mb-8">Not all AI is the same</h2>
-
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                <!-- Visual -->
                 <div class="circle-container">
                     <div id="c-ai" class="circle c-ai" onclick="selectHierarchy('ai')">
                         <div class="circle-label">Artificial Intelligence</div>
@@ -590,8 +711,6 @@
                         <div class="circle-label">Gen AI</div>
                     </div>
                 </div>
-
-                <!-- Info Box -->
                 <div class="bg-gray-50 p-8 rounded-2xl border border-gray-200 text-left h-full flex flex-col justify-center transition-all duration-300"
                     id="h-info-box">
                     <h3 id="h-title" class="text-2xl font-bold mb-4 text-blue-900">Artificial Intelligence</h3>
@@ -599,8 +718,7 @@
                         to mimic human intelligence.</p>
                     <div id="h-example"
                         class="mt-6 p-4 bg-white rounded-lg shadow-sm text-sm text-gray-500 border-l-4 border-blue-500">
-                        Example: A video game enemy that knows how to follow you.
-                    </div>
+                        Example: A video game enemy that knows how to follow you.</div>
                     <p class="text-xs text-gray-400 mt-4 text-center">Click the circles to learn more!</p>
                 </div>
             </div>
@@ -615,9 +733,7 @@
                 <h2 class="text-4xl font-bold mt-2">What is the goal?</h2>
                 <p class="text-gray-500 mt-2">You are the operator. Click "Run" to process the inputs.</p>
             </div>
-
             <div class="flex flex-col md:flex-row gap-6">
-                <!-- Card 1 -->
                 <div class="comp-card border-t-4 border-t-blue-500" id="card-class">
                     <div class="text-4xl mb-4">🏷️</div>
                     <h3 class="text-xl font-bold text-gray-900">Classification</h3>
@@ -634,7 +750,6 @@
                         <p class="text-lg font-bold">"SPAM DETECTED" 🚫</p>
                     </div>
                 </div>
-                <!-- Card 2 -->
                 <div class="comp-card border-t-4 border-t-green-500" id="card-logic">
                     <div class="text-4xl mb-4">♟️</div>
                     <h3 class="text-xl font-bold text-gray-900">Logic & Strategy</h3>
@@ -651,7 +766,6 @@
                         <p class="text-lg font-bold">"Knight to F3" ♞</p>
                     </div>
                 </div>
-                <!-- Card 3 -->
                 <div class="comp-card border-t-4 border-t-purple-500" id="card-gen">
                     <div class="text-4xl mb-4">✨</div>
                     <h3 class="text-xl font-bold text-gray-900">Creation</h3>
@@ -673,6 +787,51 @@
         </div>
     </section>
 
+    <!-- NEW SECTION: GEN AI CAPABILITIES -->
+    <section id="gen-capabilities" class="slide-section bg-white">
+        <div class="max-w-6xl mx-auto w-full">
+            <div class="text-center mb-8">
+                <span class="text-sm font-bold text-purple-600 tracking-wider uppercase">Beyond Search</span>
+                <h2 class="text-4xl font-bold mt-2">The Creative Engine: What can Gen AI Create?</h2>
+                <p class="text-gray-600 mt-2">Click a mode below to see it in action.</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="cap-btn" onclick="showGenCapability('text')">
+                        <div class="text-4xl mb-2">📝</div>
+                        <h4 class="font-bold text-lg">Text</h4>
+                        <p class="text-xs text-gray-500">Stories, Poems</p>
+                    </div>
+                    <div class="cap-btn" onclick="showGenCapability('image')">
+                        <div class="text-4xl mb-2">🖼️</div>
+                        <h4 class="font-bold text-lg">Image</h4>
+                        <p class="text-xs text-gray-500">Art, Photos</p>
+                    </div>
+                    <div class="cap-btn" onclick="showGenCapability('video')">
+                        <div class="text-4xl mb-2">🎥</div>
+                        <h4 class="font-bold text-lg">Video</h4>
+                        <p class="text-xs text-gray-500">Animations</p>
+                    </div>
+                    <div class="cap-btn" onclick="showGenCapability('code')">
+                        <div class="text-4xl mb-2">💻</div>
+                        <h4 class="font-bold text-lg">Code</h4>
+                        <p class="text-xs text-gray-500">Websites, Apps</p>
+                    </div>
+                </div>
+                <div class="cap-display shadow-2xl">
+                    <div id="cap-default" class="text-center p-8">
+                        <p class="text-2xl text-gray-500 font-bold">Select a mode 👈</p>
+                    </div>
+                    <div id="cap-content" class="hidden w-full h-full p-6 relative">
+                        <div class="absolute top-0 left-0 bg-black/50 p-2 text-xs font-mono w-full">PROMPT: <span
+                                id="cap-prompt" class="text-green-400">...</span></div>
+                        <div id="cap-result" class="w-full h-full flex items-center justify-center mt-4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- SECTION: EARSKETCH -->
     <section id="earsketch" class="slide-section bg-gray-50">
         <div class="max-w-6xl mx-auto w-full">
@@ -687,7 +846,8 @@
                     <div class="text-4xl mb-4">🎵 + 💻</div>
                     <h3 class="text-xl font-bold mb-4">Explicit Instructions</h3>
                     <p class="text-gray-700 text-lg leading-relaxed">In EarSketch, you write a script with
-                        <strong>explicit instructions</strong> on which sound to play and when.</p>
+                        <strong>explicit instructions</strong> on which sound to play and when.
+                    </p>
                 </div>
                 <div class="lg:col-span-2">
                     <div class="iframe-container bg-black"><iframe
@@ -708,7 +868,8 @@
                         MusicFX ↗</a>
                     <h2 class="text-5xl font-bold mt-2 mb-6">Generative AI Mixer</h2>
                     <p class="text-xl text-gray-300 mb-8">Traditional Coding follows rules. Generative AI
-                        <strong>creates</strong> based on patterns.</p>
+                        <strong>creates</strong> based on patterns.
+                    </p>
                     <div class="grid grid-cols-2 gap-4">
                         <div class="bg-gray-700 bg-opacity-50 p-4 rounded-lg border border-gray-600">
                             <h4 class="font-bold text-blue-400">Predictive AI</h4>
@@ -821,7 +982,8 @@
                 <div class="bg-purple-50 p-8 rounded-2xl border border-purple-100">
                     <h3 class="text-2xl font-bold text-purple-900 mb-4">Connecting Words to Sound</h3>
                     <p class="text-gray-700 mb-4 leading-relaxed">Just like ChatGPT reads text to learn words,
-                        <strong>MusicFX</strong> listens to sound files with labels to learn patterns.</p>
+                        <strong>MusicFX</strong> listens to sound files with labels to learn patterns.
+                    </p>
                 </div>
             </div>
         </div>
@@ -967,28 +1129,84 @@
         function renderTimeChart() {
             new Chart(document.getElementById('timeScaleChart').getContext('2d'), { type: 'bar', data: { labels: ['1M (Vacation)', '1B (Generation)', '1T (Ice Age)'], datasets: [{ data: [0.03, 31, 31000], backgroundColor: ['#4ade80', '#60a5fa', '#f87171'] }] }, options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', scales: { x: { type: 'logarithmic', min: 0.01 } }, plugins: { legend: { display: false } } } });
         }
-        new Chart(document.getElementById('newSearchChart').getContext('2d'), { type: 'doughnut', data: { labels: ['Known', 'New (15%)'], datasets: [{ data: [85, 15], backgroundColor: ['#e5e7eb', '#4285F4'] }] }, options: { responsive: true, maintainAspectRatio: false } });
 
-        // ML VISUALIZATION (Scatter Plot)
+        // --- REFACTORED SEARCH STREAM LOGIC (NO REPEATS) ---
+        const commonSearches = ["Weather", "Maps", "Youtube", "News", "Translate", "Calculator", "Movies", "Photos", "Drive", "Gmail", "Calendar", "Docs", "Music", "Timer", "Stopwatch"];
+
+        // Large pool of 50+ unique, kid-friendly "New" queries
+        const newSearchesPool = [
+            "Do penguins have knees?", "How to paint with clouds", "Why is the sky green in my dream?", "Recipe for invisible ink", "Can a robot dance ballet?",
+            "What does space smell like?", "Can giraffes wear ties?", "Why do onions make us cry?", "Is cereal a soup?", "How to train a dragon (real)",
+            "Do fish get thirsty?", "Can I build a house out of legos?", "What happens if you microwave a grape?", "How to speak dolphin", "Why don't birds get electrocuted?",
+            "Can turtles come out of their shells?", "How heavy is a cloud?", "Can you sneeze with eyes open?", "Do trees talk to each other?", "Why is pizza round?",
+            "Can I dig to China?", "How to become a professional ninja", "Do astronauts wear pajamas?", "Can a kangaroo jump backwards?", "Why is the ocean salty?",
+            "How to grow a pizza tree", "Do bees sleep?", "Can I adopt a cloud?", "What is the color of a mirror?", "Why do feet smell like cheese?",
+            "Can I fly with balloons?", "How to teleport an apple", "Do cats have belly buttons?", "Why is snow white?", "Can a human outrun a T-Rex?",
+            "How to breathe underwater", "Do worms have eyes?", "Why do we have eyebrows?", "Can I live on Mars?", "How to make a cardboard time machine",
+            "Do ants take naps?", "Why are flamingos pink?", "Can I catch a star?", "How to make slime without glue", "Do sharks blink?",
+            "Why is the moon following me?", "Can I touch a rainbow?", "How to build a robot dog", "Do plants like music?", "Why does popcorn pop?"
+        ];
+
+        // Shuffle function (Fisher-Yates)
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        // Shuffle on load
+        let shuffledNewSearches = shuffle([...newSearchesPool]);
+        let searchIndex = 0;
+
+        function generateSearchStream() {
+            const container = document.getElementById('search-stream-container');
+            container.innerHTML = '';
+
+            let count = 0;
+            const total = 18;
+
+            const interval = setInterval(() => {
+                if (count >= total) {
+                    clearInterval(interval);
+                    return;
+                }
+
+                // Every 6th is new (approx 16%)
+                const isNew = (count + 1) % 6 === 0;
+                let text;
+
+                if (isNew) {
+                    // Pick next from shuffled list
+                    text = shuffledNewSearches[searchIndex % shuffledNewSearches.length];
+                    searchIndex++; // Increment global index so next click gets next item
+                } else {
+                    text = commonSearches[Math.floor(Math.random() * commonSearches.length)];
+                }
+
+                const bubble = document.createElement('div');
+                bubble.className = `search-bubble ${isNew ? 'new-query' : ''}`;
+                bubble.innerHTML = isNew ? `✨ ${text}` : text;
+
+                container.appendChild(bubble);
+                count++;
+            }, 100);
+        }
+
+        // ML VISUALIZATION (Fixed Boundary)
         let mlChartInstance;
         function initMLChart() {
             const ctx = document.getElementById('mlChart').getContext('2d');
             const data1 = Array.from({ length: 20 }, () => ({ x: Math.random() * 40 + 5, y: Math.random() * 40 + 5 }));
             const data2 = Array.from({ length: 20 }, () => ({ x: Math.random() * 40 + 55, y: Math.random() * 40 + 55 }));
-            mlChartInstance = new Chart(ctx, {
-                type: 'scatter',
-                data: {
-                    datasets: [
-                        { label: 'Small Animals (e.g. Cats)', data: data1, backgroundColor: 'red' },
-                        { label: 'Big Animals (e.g. Dogs)', data: data2, backgroundColor: 'blue' },
-                        { label: 'The Pattern Line', data: [], type: 'line', borderColor: 'green', borderWidth: 2, fill: false, showLine: true, pointRadius: 0 }
-                    ]
-                },
-                options: { responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { display: false } }, plugins: { legend: { position: 'bottom' } } }
-            });
+            mlChartInstance = new Chart(ctx, { type: 'scatter', data: { datasets: [{ label: 'Small Animals (e.g. Cats)', data: data1, backgroundColor: 'red' }, { label: 'Big Animals (e.g. Dogs)', data: data2, backgroundColor: 'blue' }, { label: 'The Pattern Line', data: [], type: 'line', borderColor: 'green', borderWidth: 2, fill: false, showLine: true, pointRadius: 0 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { display: false } }, plugins: { legend: { position: 'bottom' } } } });
         }
         function trainModel() {
-            mlChartInstance.data.datasets[2].data = [{ x: 0, y: 0 }, { x: 100, y: 100 }];
+            // Draw separating line from (0,100) to (100,0)
+            mlChartInstance.data.datasets[2].data = [{ x: 0, y: 100 }, { x: 100, y: 0 }];
             mlChartInstance.update();
             document.getElementById('ml-feedback').innerHTML = "<strong class='text-green-600'>Model Trained!</strong> The AI found a line that separates the two groups.";
         }
@@ -1002,11 +1220,8 @@
             'gen': { title: 'Generative AI', desc: 'A subset of DL. It doesn\'t just analyze data, it CREATES new data (images, text, audio).', example: 'Example: ChatGPT, MusicFX.' }
         };
         function selectHierarchy(key) {
-            // Remove active class from all
             document.querySelectorAll('.circle').forEach(c => c.classList.remove('active'));
-            // Add to clicked
             document.getElementById(`c-${key}`).classList.add('active');
-            // Update Text
             document.getElementById('h-title').innerText = hierarchyData[key].title;
             document.getElementById('h-desc').innerText = hierarchyData[key].desc;
             document.getElementById('h-example').innerText = hierarchyData[key].example;
@@ -1017,14 +1232,33 @@
             const btn = document.querySelector(`#card-${type} button`);
             const loader = document.getElementById(`loader-${type}`);
             const output = document.getElementById(`out-${type}`);
+            btn.classList.add('hidden'); loader.style.display = 'block';
+            setTimeout(() => { loader.style.display = 'none'; output.style.display = 'block'; }, 1500);
+        }
 
-            btn.classList.add('hidden');
-            loader.style.display = 'block';
+        // --- NEW: GEN CAPABILITIES INTERACTION ---
+        function showGenCapability(mode) {
+            document.querySelectorAll('.cap-btn').forEach(b => b.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            document.getElementById('cap-default').classList.add('hidden');
+            const content = document.getElementById('cap-content');
+            content.classList.remove('hidden');
+            const resultBox = document.getElementById('cap-result');
+            const promptSpan = document.getElementById('cap-prompt');
 
-            setTimeout(() => {
-                loader.style.display = 'none';
-                output.style.display = 'block';
-            }, 1500);
+            if (mode === 'text') {
+                promptSpan.innerText = "Write a haiku about a robot.";
+                resultBox.innerHTML = '<div class="font-mono text-green-400 text-lg typing-cursor">Metal heart beats slow,<br>Wires hum a quiet tune,<br>Life in circuits flows.</div>';
+            } else if (mode === 'image') {
+                promptSpan.innerText = "A futuristic city at sunset.";
+                resultBox.innerHTML = '<div class="w-full h-full bg-gradient-to-br from-indigo-900 to-purple-800 relative flex items-center justify-center overflow-hidden border-4 border-white"><div class="sun"></div><div class="mountain"></div><div class="text-white z-10 text-4xl font-bold drop-shadow-lg">FUTURE CITY</div></div>';
+            } else if (mode === 'video') {
+                promptSpan.innerText = "A rocket launching into space.";
+                resultBox.innerHTML = '<div class="w-full h-full bg-black relative overflow-hidden flex items-end justify-center"><div style="font-size:5rem; animation: rise 2s infinite ease-in;">🚀</div><div class="absolute w-full h-1 bg-white bottom-10 animate-pulse"></div></div>';
+            } else if (mode === 'code') {
+                promptSpan.innerText = "Create a blue button.";
+                resultBox.innerHTML = '<div class="flex flex-col items-center gap-4"><div class="bg-gray-800 p-2 rounded text-xs font-mono text-gray-300 w-full">button {<br>&nbsp;&nbsp;background: blue;<br>&nbsp;&nbsp;color: white;<br>}</div><button class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition transform hover:scale-110 shadow-xl">I AM ALIVE!</button></div>';
+            }
         }
 
         // MIXER & TRIANGULATION
