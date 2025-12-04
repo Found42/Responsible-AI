@@ -1,0 +1,1762 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exploring AI Responsibly | Interactive Student Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Wistia Player Scripts -->
+    <script src="https://fast.wistia.com/player.js" async></script>
+    <script src="https://fast.wistia.com/embed/be0ruvkjze.js" async type="module"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            color: #1f2937;
+        }
+
+        /* Layout Utilities */
+        .slide-section {
+            min-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 2rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-image: linear-gradient(to right, #4285F4, #DB4437, #F4B400, #0F9D58);
+        }
+
+        /* Navigation */
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #d1d5db;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .nav-dot.active {
+            background-color: #4285F4;
+            transform: scale(1.2);
+        }
+
+        .tooltip {
+            visibility: hidden;
+            position: absolute;
+            background-color: #333;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 50;
+            white-space: nowrap;
+            right: 20px;
+            top: 0;
+        }
+
+        .group:hover .tooltip {
+            visibility: visible;
+        }
+
+        /* Chart Containers */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            height: 300px;
+            max-height: 400px;
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounce-small {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .animate-bounce-small {
+            animation: bounce-small 2s infinite;
+        }
+
+        @keyframes breathe {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .animate-breathe {
+            animation: breathe 20s infinite ease-in-out;
+        }
+
+        /* Quiz Styles */
+        .quiz-option {
+            transition: all 0.2s;
+            border: 2px solid #e5e7eb;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quiz-option:hover {
+            border-color: #4285F4;
+            transform: translateY(-2px);
+            shadow: lg;
+        }
+
+        .quiz-option.correct {
+            background-color: #dcfce7;
+            border-color: #22c55e;
+            color: #14532d;
+        }
+
+        .quiz-option.incorrect {
+            background-color: #fee2e2;
+            border-color: #ef4444;
+            opacity: 0.6;
+        }
+
+        /* Iframe Responsive Container */
+        .iframe-container {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            padding-top: 56.25%;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .iframe-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Training Data Cards */
+        .training-card {
+            perspective: 1000px;
+            height: 180px;
+            cursor: pointer;
+        }
+
+        .training-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .training-card:hover .training-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .training-front,
+        .training-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 2px solid #e5e7eb;
+        }
+
+        .training-front {
+            background-color: white;
+        }
+
+        .training-back {
+            background-color: #eff6ff;
+            transform: rotateY(180deg);
+            border-color: #3b82f6;
+        }
+
+        /* Search Bubble Visualization */
+        .search-bubble {
+            padding: 8px 12px;
+            border-radius: 20px;
+            background: #f1f3f4;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            margin: 4px;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: popIn 0.3s forwards;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            cursor: default;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .search-bubble.new-query {
+            background: #e8f0fe;
+            color: #1967d2;
+            border: 1px solid #1967d2;
+            font-weight: bold;
+            transform: scale(1.05);
+        }
+
+        .search-bubble:hover {
+            transform: scale(1.1);
+            z-index: 10;
+        }
+
+        @keyframes popIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Nested Circles Visualization */
+        .circle-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .circle {
+            border-radius: 50%;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            position: absolute;
+            transition: all 0.3s ease;
+            border: 2px solid;
+            cursor: pointer;
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .circle:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .circle.active {
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 25px rgba(66, 133, 244, 0.4);
+            border-width: 4px;
+        }
+
+        .circle-label {
+            margin-top: 15px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 2px 8px;
+            border-radius: 4px;
+            pointer-events: none;
+        }
+
+        .c-ai {
+            width: 380px;
+            height: 380px;
+            background-color: #eff6ff;
+            border-color: #3b82f6;
+            color: #1e40af;
+            z-index: 10;
+        }
+
+        .c-ml {
+            width: 280px;
+            height: 280px;
+            background-color: #f0fdf4;
+            border-color: #22c55e;
+            color: #15803d;
+            z-index: 20;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .c-dl {
+            width: 180px;
+            height: 180px;
+            background-color: #fefce8;
+            border-color: #eab308;
+            color: #a16207;
+            z-index: 30;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .c-gen {
+            width: 100px;
+            height: 100px;
+            background-color: #faf5ff;
+            border-color: #a855f7;
+            color: #6b21a8;
+            z-index: 40;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+        }
+
+        .c-gen .circle-label {
+            margin-top: 0;
+        }
+
+        /* Comparison Cards */
+        .comp-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .comp-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            border-color: #3b82f6;
+        }
+
+        .comp-output {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            width: 100%;
+            text-align: center;
+            animation: fadeIn 0.5s forwards;
+        }
+
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 3px solid #3498db;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: none;
+            margin: 10px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Gen AI Capabilities Styles */
+        .cap-btn {
+            text-align: center;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border: 2px solid #e5e7eb;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .cap-btn:hover {
+            border-color: #4285F4;
+            transform: scale(1.05);
+        }
+
+        .cap-btn.active {
+            border-color: #4285F4;
+            background-color: #eff6ff;
+            box-shadow: 0 4px 6px -1px rgba(66, 133, 244, 0.2);
+        }
+
+        .cap-display {
+            height: 300px;
+            background: #1f2937;
+            border-radius: 1rem;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* Wistia Style */
+        wistia-player[media-id='be0ruvkjze']:not(:defined) {
+            background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/be0ruvkjze/swatch');
+            display: block;
+            filter: blur(5px);
+            padding-top: 56.25%;
+        }
+
+        /* CSS Art for Image Simulation (Video uses Wistia now) */
+        .sun {
+            width: 50px;
+            height: 50px;
+            background: #FDB813;
+            border-radius: 50%;
+            box-shadow: 0 0 20px #FDB813;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            animation: rise 4s infinite alternate;
+        }
+
+        .mountain {
+            width: 0;
+            height: 0;
+            border-left: 100px solid transparent;
+            border-right: 100px solid transparent;
+            border-bottom: 200px solid #4b5563;
+            position: absolute;
+            bottom: 0;
+        }
+
+        @keyframes rise {
+            from {
+                transform: translateY(0);
+            }
+
+            to {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Triangulation Tabs */
+        .tri-tab {
+            cursor: pointer;
+            padding: 1rem;
+            background: #f3f4f6;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            color: #4b5563;
+            transition: all 0.2s;
+        }
+
+        .tri-tab:hover {
+            background: #e5e7eb;
+        }
+
+        .tri-tab.active {
+            background: #4285F4;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(66, 133, 244, 0.3);
+        }
+
+        .tri-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .tri-content.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation Dots -->
+    <div class="fixed right-5 top-1/2 transform -translate-y-1/2 z-50 flex flex-col gap-4 hidden md:flex items-end">
+        <div class="group flex items-center gap-2 relative"><span class="tooltip">Start</span>
+            <div class="nav-dot active" onclick="scrollToSection('hero')"></div>
+        </div>
+        <div class="group flex items-center gap-2 relative"><span class="tooltip">Scale</span>
+            <div class="nav-dot" onclick="scrollToSection('quiz-section')"></div>
+        </div>
+        <div class="group flex items-center gap-2 relative"><span class="tooltip">15% Problem</span>
+            <div class="nav-dot" onclick="scrollToSection('search-ai')"></div>
+        </div>
+        <div class="group flex items-center gap-2 relative"><span class="tooltip">ML Logic</span>
+            <div class="nav-dot" onclick="scrollToSection('ml-logic')"></div>
+        </div>
+        <div class="group flex items-center gap-2 relative"><span class="tooltip">Hierarchy</span>
+            <div class="nav-dot" onclick="scrollToSection('ai-hierarchy')"></div>
+        </div>
+        <div class="group flex items-center gap-2 relative"><span class="tooltip">Types of AI</span>
+            <div class="nav-dot" onclick="scrollToSection('ai-comparison')"></div>
+        </div>
+        <div class="group flex items-center gap-2 relative"><span class="tooltip">Capabilities</span>
+            <div class="nav-dot" onclick="scrollToSection('gen-capabilities')"></div>
+        </div>
+        <div class="group flex items-center gap-2 relative"><span class="tooltip">Traditional</span>
+            <div class="nav-dot" onclick="scrollToSection('earsketch')"></div>
+        </div>
+        <div class="group flex items-center gap-2 relative"><span class="tooltip">Generative</span>
+            <div class="nav-dot" onclick="scrollToSection('gen-ai')"></div>
+        </div>
+        <div class="group flex items-center gap-2 relative"><span class="tooltip">Training</span>
+            <div class="nav-dot" onclick="scrollToSection('training-data')"></div>
+        </div>
+        <div class="group flex items-center gap-2 relative"><span class="tooltip">Skepticism</span>
+            <div class="nav-dot" onclick="scrollToSection('skepticism')"></div>
+        </div>
+        <div class="group flex items-center gap-2 relative"><span class="tooltip">Triangulation</span>
+            <div class="nav-dot" onclick="scrollToSection('source-triangulation-info')"></div>
+        </div>
+    </div>
+
+    <!-- HERO SECTION -->
+    <section id="hero" class="slide-section bg-white text-center">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-5xl md:text-6xl font-extrabold mb-6 tracking-tight leading-tight">
+                Exploring AI Responsibly <br>
+                <span class="gradient-text text-4xl md:text-5xl">Interactive Student Lab</span>
+            </h1>
+            <p class="text-2xl text-gray-600 mb-8">
+                How big is "Big Data"? How does AI think? And how do we find the truth?
+            </p>
+            <div class="mt-8">
+                <button onclick="scrollToSection('quiz-section')"
+                    class="bg-blue-600 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-blue-700 transition shadow-lg animate-bounce-small">
+                    Start the Time Machine 🚀
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 1: THE TIME MACHINE QUIZ -->
+    <section id="quiz-section" class="slide-section bg-slate-50">
+        <div class="max-w-4xl mx-auto w-full">
+            <div class="text-center mb-8">
+                <span class="text-sm font-bold text-red-500 tracking-wider uppercase">The Scale of Data</span>
+                <h2 class="text-4xl font-bold mt-2">The Time Machine Quiz</h2>
+                <p class="text-gray-600 mt-2">Google uses AI because the numbers are too big for humans.</p>
+            </div>
+
+            <div id="quiz-container" class="bg-white rounded-2xl shadow-xl overflow-hidden min-h-[500px] relative">
+                <div class="w-full bg-gray-200 h-2">
+                    <div id="progress-bar" class="bg-blue-500 h-2 transition-all duration-500" style="width: 10%"></div>
+                </div>
+
+                <div class="p-8 md:p-12">
+                    <!-- Q1 -->
+                    <div id="q1" class="quiz-step fade-in">
+                        <div class="flex justify-center mb-6 text-6xl">🏖️</div>
+                        <h3 class="text-2xl font-bold text-center mb-8">How long is <span class="text-blue-600">1
+                                Million</span> Seconds?</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <button class="quiz-option p-6 rounded-xl text-lg font-bold bg-white hover:bg-blue-50"
+                                onclick="checkAnswer(1, 'A', this)">11 Hours <div
+                                    class="text-xs font-normal text-gray-500 mt-2">(A long sleep)</div></button>
+                            <button class="quiz-option p-6 rounded-xl text-lg font-bold bg-white hover:bg-blue-50"
+                                onclick="checkAnswer(1, 'B', this)">11 Days <div
+                                    class="text-xs font-normal text-gray-500 mt-2">(A vacation)</div></button>
+                            <button class="quiz-option p-6 rounded-xl text-lg font-bold bg-white hover:bg-blue-50"
+                                onclick="checkAnswer(1, 'C', this)">11 Years <div
+                                    class="text-xs font-normal text-gray-500 mt-2">(Your whole life)</div></button>
+                        </div>
+                        <div id="feedback-1"
+                            class="hidden mt-6 text-center bg-blue-50 p-6 rounded-xl border border-blue-100"></div>
+                    </div>
+                    <!-- Q2 -->
+                    <div id="q2" class="quiz-step hidden">
+                        <div class="flex justify-center mb-6 text-6xl">👨‍👩‍👧</div>
+                        <h3 class="text-2xl font-bold text-center mb-8">How long is <span class="text-blue-600">1
+                                Billion</span> Seconds?</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <button class="quiz-option p-6 rounded-xl text-lg font-bold bg-white hover:bg-blue-50"
+                                onclick="checkAnswer(2, 'A', this)">3 Years</button>
+                            <button class="quiz-option p-6 rounded-xl text-lg font-bold bg-white hover:bg-blue-50"
+                                onclick="checkAnswer(2, 'B', this)">31 Years</button>
+                            <button class="quiz-option p-6 rounded-xl text-lg font-bold bg-white hover:bg-blue-50"
+                                onclick="checkAnswer(2, 'C', this)">310 Years</button>
+                        </div>
+                        <div id="feedback-2"
+                            class="hidden mt-6 text-center bg-blue-50 p-6 rounded-xl border border-blue-100"></div>
+                    </div>
+                    <!-- Q3 -->
+                    <div id="q3" class="quiz-step hidden">
+                        <div class="flex justify-center mb-6 text-6xl">⏳</div>
+                        <h3 class="text-2xl font-bold text-center mb-8">How long is <span class="text-red-600">1
+                                Trillion</span> Seconds?</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <button
+                                class="quiz-option p-0 rounded-xl bg-amber-50 h-48 flex flex-col items-center justify-center group"
+                                onclick="checkAnswer(3, 'A', this)">
+                                <div class="text-5xl mb-2">🦃</div>
+                                <div class="font-bold text-amber-900">310 Years</div>
+                            </button>
+                            <button
+                                class="quiz-option p-0 rounded-xl bg-yellow-50 h-48 flex flex-col items-center justify-center group"
+                                onclick="checkAnswer(3, 'B', this)">
+                                <div class="text-5xl mb-2">🏺</div>
+                                <div class="font-bold text-yellow-900">3,100 Years</div>
+                            </button>
+                            <button
+                                class="quiz-option p-0 rounded-xl bg-cyan-50 h-48 flex flex-col items-center justify-center group"
+                                onclick="checkAnswer(3, 'C', this)">
+                                <div class="text-5xl mb-2">🦣</div>
+                                <div class="font-bold text-cyan-900">31,000 Years</div>
+                            </button>
+                        </div>
+                        <div id="feedback-3"
+                            class="hidden mt-6 text-center bg-cyan-50 p-6 rounded-xl border-2 border-cyan-200 shadow-inner">
+                        </div>
+                    </div>
+
+                    <!-- REVEAL (REPLACED WITH GLOBE) -->
+                    <div id="q-chart" class="quiz-step hidden">
+                        <div
+                            class="relative w-full h-[500px] bg-black rounded-2xl overflow-hidden flex flex-col items-center justify-center text-white p-8 shadow-2xl">
+                            <!-- Background Image -->
+                            <div class="absolute inset-0 opacity-70 animate-breathe">
+                                <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1000&auto=format&fit=crop"
+                                    alt="Earth from space" class="w-full h-full object-cover">
+                            </div>
+
+                            <!-- Overlay Content -->
+                            <div class="relative z-10 text-center max-w-3xl">
+                                <div class="text-6xl mb-6">🌍</div>
+                                <h3 class="text-3xl md:text-5xl font-bold mb-8 leading-tight drop-shadow-lg">
+                                    Google handles <br>
+                                    <span class="text-blue-400">5 Trillion searches</span> a year <br>
+                                    from people all over the world.
+                                </h3>
+
+                                <div
+                                    class="bg-white/10 backdrop-blur-md p-8 rounded-2xl border border-white/20 shadow-xl">
+                                    <p class="text-xl md:text-2xl font-light leading-relaxed">
+                                        Nearly <span class="font-bold text-yellow-400 text-4xl block mt-2 mb-2">1
+                                            Trillion</span>
+                                        of them are <strong class="text-white">new search queries</strong> that <br>
+                                        <span class="italic text-gray-300">no one has ever searched before.</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 2: 15% PROBLEM -->
+    <section id="search-ai" class="slide-section bg-white">
+        <div class="max-w-6xl mx-auto w-full">
+            <div class="text-center mb-12">
+                <span class="text-sm font-bold text-blue-500 tracking-wider uppercase">Rules vs. Patterns</span>
+                <h2 class="text-4xl font-bold mt-2">Why can't we just code the answers?</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                <div
+                    class="bg-blue-50 rounded-2xl p-6 flex flex-col items-center text-center shadow-inner border border-blue-100 min-h-[400px]">
+                    <h3 class="text-xl font-bold text-blue-900 mb-2">The "New" Query Problem</h3>
+                    <p class="text-sm text-blue-700 mb-4">Every day, 15% of Google searches are <strong>brand
+                            new</strong>. That's 1 in 6!</p>
+                    <div id="search-stream-container"
+                        class="flex flex-wrap justify-center content-start gap-2 w-full flex-grow overflow-hidden relative">
+                        <div class="text-gray-400 text-sm mt-10">Click 'Analyze' to see the stream...</div>
+                    </div>
+                    <button onclick="generateSearchStream()"
+                        class="mt-4 bg-blue-600 text-white px-6 py-2 rounded-full font-bold hover:bg-blue-700 transition shadow">Analyze
+                        Today's Searches 🔍</button>
+                </div>
+                <div class="bg-gray-50 rounded-2xl p-8 border border-gray-200 h-full">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Old Coding vs. AI</h3>
+                    <div class="space-y-6">
+                        <div class="flex items-start gap-4">
+                            <div class="bg-gray-200 p-2 rounded text-xl">📜</div>
+                            <div>
+                                <h4 class="font-bold">Traditional Programming</h4>
+                                <p class="text-sm text-gray-600 mt-1">You write specific rules: <br><code
+                                        class="bg-gray-100 px-1 rounded text-xs">If user types "cat", show cat.jpg</code>
+                                </p>
+                                <p class="text-xs text-red-500 mt-2 font-bold">Problem: You can't write rules for things
+                                    you've never seen!</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="bg-purple-100 p-2 rounded text-xl">🧠</div>
+                            <div>
+                                <h4 class="font-bold text-purple-700">Machine Learning (AI)</h4>
+                                <p class="text-sm text-gray-600 mt-1">You feed it data (patterns). It learns to
+                                    understand <em>intent</em>, even for searches it has never seen before.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION: ML LOGIC VISUALIZATION (FIXED: SEPARATION LINE) -->
+    <section id="ml-logic" class="slide-section bg-slate-50">
+        <div class="max-w-4xl mx-auto w-full">
+            <div class="text-center mb-8">
+                <span class="text-sm font-bold text-indigo-600 tracking-wider uppercase">How Machine Learning
+                    Works</span>
+                <h2 class="text-4xl font-bold mt-2">Finding the Line</h2>
+                <p class="text-gray-600 mt-2">Machine Learning finds a boundary to separate the groups (Classification).
+                </p>
+            </div>
+            <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
+                <div class="chart-container relative w-full h-80 bg-gray-50 rounded-lg border border-gray-200 mb-4">
+                    <canvas id="mlChart"></canvas></div>
+                <button onclick="trainModel()"
+                    class="bg-indigo-600 text-white px-8 py-3 rounded-full font-bold hover:bg-indigo-700 transition shadow-lg">Train
+                    Model (Find the Line) 🧠</button>
+                <p id="ml-feedback" class="mt-4 text-center text-gray-500 italic">Click "Train Model" to see the AI
+                    separate the data.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION: AI HIERARCHY -->
+    <section id="ai-hierarchy" class="slide-section bg-white">
+        <div class="max-w-4xl mx-auto w-full text-center">
+            <span class="text-sm font-bold text-green-600 tracking-wider uppercase">The AI Family Tree</span>
+            <h2 class="text-4xl font-bold mt-2 mb-8">Not all AI is the same</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="circle-container">
+                    <div id="c-ai" class="circle c-ai" onclick="selectHierarchy('ai')">
+                        <div class="circle-label">Artificial Intelligence</div>
+                    </div>
+                    <div id="c-ml" class="circle c-ml" onclick="selectHierarchy('ml')">
+                        <div class="circle-label">Machine Learning</div>
+                    </div>
+                    <div id="c-dl" class="circle c-dl" onclick="selectHierarchy('dl')">
+                        <div class="circle-label">Deep Learning</div>
+                    </div>
+                    <div id="c-gen" class="circle c-gen" onclick="selectHierarchy('gen')">
+                        <div class="circle-label">Gen AI</div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 p-8 rounded-2xl border border-gray-200 text-left h-full flex flex-col justify-center transition-all duration-300"
+                    id="h-info-box">
+                    <h3 id="h-title" class="text-2xl font-bold mb-4 text-blue-900">Artificial Intelligence</h3>
+                    <p id="h-desc" class="text-lg text-gray-700">The big umbrella! Any technique that enables computers
+                        to mimic human intelligence.</p>
+                    <div id="h-example"
+                        class="mt-6 p-4 bg-white rounded-lg shadow-sm text-sm text-gray-500 border-l-4 border-blue-500">
+                        Example: A video game enemy that knows how to follow you.</div>
+                    <p class="text-xs text-gray-400 mt-4 text-center">Click the circles to learn more!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION: INTERACTIVE COMPARISON -->
+    <section id="ai-comparison" class="slide-section bg-slate-50">
+        <div class="max-w-6xl mx-auto w-full">
+            <div class="text-center mb-12">
+                <span class="text-sm font-bold text-gray-500 tracking-wider uppercase">Comparing Capabilities</span>
+                <h2 class="text-4xl font-bold mt-2">What is the goal?</h2>
+                <p class="text-gray-500 mt-2">You are the operator. Click "Run" to process the inputs.</p>
+            </div>
+            <div class="flex flex-col md:flex-row gap-6">
+                <div class="comp-card border-t-4 border-t-blue-500" id="card-class">
+                    <div class="text-4xl mb-4">🏷️</div>
+                    <h3 class="text-xl font-bold text-gray-900">Classification</h3>
+                    <p class="text-sm text-blue-600 font-bold uppercase mb-4">Machine Learning</p>
+                    <div class="w-full bg-gray-100 p-3 rounded-lg text-sm mb-4">
+                        <div class="flex justify-between"><span>Input:</span> <strong>Unknown Email</strong></div>
+                    </div>
+                    <button onclick="runComparison('class')"
+                        class="bg-blue-600 text-white px-6 py-2 rounded-full font-bold hover:bg-blue-700 transition w-full">Classify
+                        Email</button>
+                    <div class="loader" id="loader-class"></div>
+                    <div id="out-class" class="comp-output bg-blue-100 text-blue-900 border border-blue-200">
+                        <p class="text-xs font-bold uppercase text-blue-500">Output:</p>
+                        <p class="text-lg font-bold">"SPAM DETECTED" 🚫</p>
+                    </div>
+                </div>
+                <div class="comp-card border-t-4 border-t-green-500" id="card-logic">
+                    <div class="text-4xl mb-4">♟️</div>
+                    <h3 class="text-xl font-bold text-gray-900">Logic & Strategy</h3>
+                    <p class="text-sm text-green-600 font-bold uppercase mb-4">Narrow AI</p>
+                    <div class="w-full bg-gray-100 p-3 rounded-lg text-sm mb-4">
+                        <div class="flex justify-between"><span>Input:</span> <strong>Chess Board</strong></div>
+                    </div>
+                    <button onclick="runComparison('logic')"
+                        class="bg-green-600 text-white px-6 py-2 rounded-full font-bold hover:bg-green-700 transition w-full">Calculate
+                        Move</button>
+                    <div class="loader" id="loader-logic"></div>
+                    <div id="out-logic" class="comp-output bg-green-100 text-green-900 border border-green-200">
+                        <p class="text-xs font-bold uppercase text-green-500">Output:</p>
+                        <p class="text-lg font-bold">"Knight to F3" ♞</p>
+                    </div>
+                </div>
+                <div class="comp-card border-t-4 border-t-purple-500" id="card-gen">
+                    <div class="text-4xl mb-4">✨</div>
+                    <h3 class="text-xl font-bold text-gray-900">Creation</h3>
+                    <p class="text-sm text-purple-600 font-bold uppercase mb-4">Generative AI</p>
+                    <div class="w-full bg-gray-100 p-3 rounded-lg text-sm mb-4">
+                        <div class="flex justify-between"><span>Input:</span> <strong>"Cat in Space"</strong></div>
+                    </div>
+                    <button onclick="runComparison('gen')"
+                        class="bg-purple-600 text-white px-6 py-2 rounded-full font-bold hover:bg-purple-700 transition w-full">Generate
+                        Image</button>
+                    <div class="loader" id="loader-gen"></div>
+                    <div id="out-gen" class="comp-output bg-purple-100 text-purple-900 border border-purple-200">
+                        <p class="text-xs font-bold uppercase text-purple-500">Output:</p>
+                        <p class="text-4xl mt-2">🐱🚀</p>
+                        <p class="text-xs mt-1">(New Image Created)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEW SECTION: GEN AI CAPABILITIES -->
+    <section id="gen-capabilities" class="slide-section bg-white">
+        <div class="max-w-6xl mx-auto w-full">
+            <div class="text-center mb-8">
+                <span class="text-sm font-bold text-purple-600 tracking-wider uppercase">Beyond Search</span>
+                <h2 class="text-4xl font-bold mt-2">The Creative Engine: What can Gen AI Create?</h2>
+                <p class="text-gray-600 mt-2">Click a mode below to see it in action.</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="cap-btn" onclick="showGenCapability('text')">
+                        <div class="text-4xl mb-2">📝</div>
+                        <h4 class="font-bold text-lg">Text</h4>
+                        <p class="text-xs text-gray-500">Stories, Poems</p>
+                    </div>
+                    <div class="cap-btn" onclick="showGenCapability('image')">
+                        <div class="text-4xl mb-2">🖼️</div>
+                        <h4 class="font-bold text-lg">Image</h4>
+                        <p class="text-xs text-gray-500">Art, Photos</p>
+                    </div>
+                    <div class="cap-btn" onclick="showGenCapability('video')">
+                        <div class="text-4xl mb-2">🎥</div>
+                        <h4 class="font-bold text-lg">Video</h4>
+                        <p class="text-xs text-gray-500">Animations</p>
+                    </div>
+                    <div class="cap-btn" onclick="showGenCapability('code')">
+                        <div class="text-4xl mb-2">💻</div>
+                        <h4 class="font-bold text-lg">Code</h4>
+                        <p class="text-xs text-gray-500">Websites, Apps</p>
+                    </div>
+                </div>
+                <div class="cap-display shadow-2xl">
+                    <div id="cap-default" class="text-center p-8">
+                        <p class="text-2xl text-gray-500 font-bold">Select a mode 👈</p>
+                    </div>
+                    <div id="cap-content" class="hidden w-full h-full p-6 relative">
+                        <div class="absolute top-0 left-0 bg-black/50 p-2 text-xs font-mono w-full">PROMPT: <span
+                                id="cap-prompt" class="text-green-400">...</span></div>
+                        <div id="cap-result" class="w-full h-full flex items-center justify-center mt-4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION: EARSKETCH -->
+    <section id="earsketch" class="slide-section bg-gray-50">
+        <div class="max-w-6xl mx-auto w-full">
+            <div class="text-center mb-8">
+                <span class="text-sm font-bold text-orange-600 tracking-wider uppercase">Traditional Coding
+                    Example</span>
+                <h2 class="text-4xl font-bold mt-2">Create Music with Code in EarSketch</h2>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+                <div
+                    class="lg:col-span-1 bg-white p-6 rounded-2xl shadow-md border-l-4 border-orange-500 h-full flex flex-col justify-center">
+                    <div class="text-4xl mb-4">🎵 + 💻</div>
+                    <h3 class="text-xl font-bold mb-4">Explicit Instructions</h3>
+                    <p class="text-gray-700 text-lg leading-relaxed">In EarSketch, you write a script with
+                        <strong>explicit instructions</strong> on which sound to play and when.</p>
+                </div>
+                <div class="lg:col-span-2">
+                    <div class="iframe-container bg-black"><iframe
+                            src="https://earsketch.gatech.edu/earsketch2/?sharing=lGV1YPkxon52AZI4Be8jZQ&embedded=true"
+                            allow="midi; encrypted-media"></iframe></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 3: GENERATIVE AI MIXER -->
+    <section id="gen-ai" class="slide-section bg-gradient-to-br from-gray-900 to-gray-800 text-white">
+        <div class="max-w-6xl mx-auto w-full">
+            <div class="flex flex-col md:flex-row gap-12 items-center">
+                <div class="md:w-1/2">
+                    <a href="https://labs.google/fx/tools/music-fx" target="_blank"
+                        class="inline-block bg-purple-600 hover:bg-purple-500 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider transition mb-2 cursor-pointer text-white no-underline">Try
+                        MusicFX ↗</a>
+                    <h2 class="text-5xl font-bold mt-2 mb-6">Generative AI Mixer</h2>
+                    <p class="text-xl text-gray-300 mb-8">Traditional Coding follows rules. Generative AI
+                        <strong>creates</strong> based on patterns.</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-gray-700 bg-opacity-50 p-4 rounded-lg border border-gray-600">
+                            <h4 class="font-bold text-blue-400">Predictive AI</h4>
+                            <p class="text-sm text-gray-400 mt-2">"Here is a video you might like."</p>
+                        </div>
+                        <div class="bg-purple-900 bg-opacity-50 p-4 rounded-lg border border-purple-500">
+                            <h4 class="font-bold text-purple-300">Generative AI</h4>
+                            <p class="text-sm text-gray-300 mt-2">"Here is a new poem."</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="md:w-1/2">
+                    <div class="bg-white text-gray-900 rounded-2xl p-6 shadow-2xl">
+                        <h3 class="text-xl font-bold mb-4">MusicFX Concept Demo</h3>
+                        <div class="flex gap-4 mb-6 justify-center">
+                            <button id="beat1" class="px-4 py-2 bg-gray-200 rounded-full hover:bg-gray-300 transition"
+                                onclick="toggleBeat('beat1')">🥁 Chicago Hip Hop</button>
+                            <span class="self-center font-bold">+</span>
+                            <button id="beat2" class="px-4 py-2 bg-gray-200 rounded-full hover:bg-gray-300 transition"
+                                onclick="toggleBeat('beat2')">🎻 Violins</button>
+                        </div>
+                        <div id="gen-result"
+                            class="h-32 bg-gray-100 rounded-xl flex items-center justify-center border-2 border-dashed border-gray-300">
+                            <p class="text-gray-400 font-bold">Select inputs...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION: TRAINING DATA -->
+    <section id="training-data" class="slide-section bg-white border-t border-gray-200">
+        <div class="max-w-6xl mx-auto w-full">
+            <div class="text-center mb-12">
+                <span class="text-sm font-bold text-purple-600 tracking-wider uppercase">Inside the AI Brain</span>
+                <h2 class="text-4xl font-bold mt-2">How do Large Language Models Learn?</h2>
+                <p class="text-xl text-gray-600 mt-4 max-w-2xl mx-auto">
+                    Before MusicFX can make music, it has to listen to billions of songs. This is called the
+                    <strong>Training Set</strong>.
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h3 class="font-bold text-gray-500 mb-4 text-center uppercase text-sm">The Training Data (Hover to
+                        Reveal Labels)</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="training-card">
+                            <div class="training-card-inner">
+                                <div class="training-front">
+                                    <div class="text-5xl mb-2">🎷</div>
+                                    <div class="font-bold text-gray-800">Audio #1042</div>
+                                </div>
+                                <div class="training-back">
+                                    <h4 class="font-bold text-blue-600 mb-2">Labels:</h4>
+                                    <div class="flex flex-wrap gap-2 justify-center px-4"><span
+                                            class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Sax</span><span
+                                            class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Jazz</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="training-card">
+                            <div class="training-card-inner">
+                                <div class="training-front">
+                                    <div class="text-5xl mb-2">🎻</div>
+                                    <div class="font-bold text-gray-800">Audio #5591</div>
+                                </div>
+                                <div class="training-back">
+                                    <h4 class="font-bold text-purple-600 mb-2">Labels:</h4>
+                                    <div class="flex flex-wrap gap-2 justify-center px-4"><span
+                                            class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">Violin</span><span
+                                            class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">Sad</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="training-card">
+                            <div class="training-card-inner">
+                                <div class="training-front">
+                                    <div class="text-5xl mb-2">🎹</div>
+                                    <div class="font-bold text-gray-800">Audio #8812</div>
+                                </div>
+                                <div class="training-back">
+                                    <h4 class="font-bold text-green-600 mb-2">Labels:</h4>
+                                    <div class="flex flex-wrap gap-2 justify-center px-4"><span
+                                            class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Piano</span><span
+                                            class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Happy</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="training-card">
+                            <div class="training-card-inner">
+                                <div class="training-front">
+                                    <div class="text-5xl mb-2">🥁</div>
+                                    <div class="font-bold text-gray-800">Audio #3310</div>
+                                </div>
+                                <div class="training-back">
+                                    <h4 class="font-bold text-red-600 mb-2">Labels:</h4>
+                                    <div class="flex flex-wrap gap-2 justify-center px-4"><span
+                                            class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Hip
+                                            Hop</span><span
+                                            class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Fast</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-purple-50 p-8 rounded-2xl border border-purple-100">
+                    <h3 class="text-2xl font-bold text-purple-900 mb-4">Connecting Words to Sound</h3>
+                    <p class="text-gray-700 mb-4 leading-relaxed">Just like Gemini reads text to learn words,
+                        <strong>MusicFX</strong> listens to sound files with labels to learn patterns.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 4: SKEPTICISM & RESPONSIBILITY -->
+    <section id="skepticism" class="slide-section bg-slate-50">
+        <div class="max-w-4xl mx-auto text-center">
+
+            <!-- Embed -->
+            <div class="mb-12 iframe-container bg-white shadow-xl rounded-xl border border-gray-200">
+                <iframe
+                    src="https://docs.google.com/presentation/d/e/2PACX-1vSW0VsbxB0IJodVYnsxoBYTse1idfLhtHQ_4670NRUdwKw600jjeHb0R7OnM-qTtDm9rd1o0Nss2QfX/pubembed?start=false&loop=false&delayms=3000"
+                    allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
+            </div>
+
+            <!-- MODIFIED HEADER -->
+            <h2 class="text-4xl font-bold text-green-700 mb-8 tracking-tight">How to Explore AI Responsibly</h2>
+
+            <!-- NEW TEXT BLOCK -->
+            <div class="bg-white p-8 rounded-2xl shadow-sm border-l-8 border-green-500 text-left mb-16">
+                <p class="text-lg text-gray-800 mb-6 font-medium leading-relaxed">
+                    Before experimenting with AI tools, it’s important to understand their limitations and set clear
+                    expectations for responsible use.
+                </p>
+                <div class="space-y-4">
+                    <div class="flex items-start gap-4">
+                        <div class="bg-green-100 p-2 rounded-full text-green-700">🧠</div>
+                        <p class="text-gray-700"><strong>AI is a tool</strong> and not a replacement for critical
+                            thinking.</p>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="bg-yellow-100 p-2 rounded-full text-yellow-700">⚠️</div>
+                        <p class="text-gray-700">AI can make mistakes and even make things up. <strong>Double-check
+                                information.</strong></p>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="bg-blue-100 p-2 rounded-full text-blue-700">🤖</div>
+                        <p class="text-gray-700"><strong>AI is technology, not human.</strong> It cannot think for
+                            itself, it is just great at picking up patterns.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NEW SECTION: GOOGLE AI OVERVIEWS & AI MODE -->
+            <div class="mb-16 text-left">
+                <div class="flex items-center gap-3 mb-6">
+                    <span
+                        class="text-sm font-bold text-blue-600 tracking-wider uppercase bg-blue-100 px-3 py-1 rounded-full">New
+                        Search Tools</span>
+                    <h3 class="text-3xl font-bold text-gray-900">Google AI Overviews and AI Mode</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <!-- Column 1: AI Overviews -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 hover:shadow-md transition">
+                        <div class="text-4xl mb-4">⚡</div>
+                        <h4 class="text-xl font-bold text-blue-700 mb-2">Uncover info fast with AI Overviews</h4>
+                        <p class="text-gray-600 text-sm leading-relaxed mb-4">
+                            Use Google AI Overviews to quickly explore topics they’re curious about. After adding your
+                            question to Google Search, AI Overviews will provide a clear, structured snapshot of key
+                            information for them to read, with helpful links to explore more on the web.
+                        </p>
+                    </div>
+
+                    <!-- Column 2: AI Mode -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 hover:shadow-md transition">
+                        <div class="text-4xl mb-4">🌊</div>
+                        <h4 class="text-xl font-bold text-indigo-700 mb-2">Dive deeper with AI Mode</h4>
+                        <p class="text-gray-600 text-sm leading-relaxed mb-4">
+                            AI Mode is then ready for all of their follow-up questions. No special phrasing or
+                            formatting required. It understands the context of their question, however they ask it.
+                            <br><br>
+                            AI Mode will then continue to organize information into clear, structured breakdowns with
+                            helpful links, always ready for their next follow up question.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Shared Footer: Quality & Safety -->
+                <div class="bg-gray-50 p-6 rounded-xl border-l-4 border-gray-400 mb-12">
+                    <h5 class="font-bold text-gray-800 mb-2 flex items-center gap-2">🛡️ Quality & Safety Guardrails
+                    </h5>
+                    <p class="text-sm text-gray-600 leading-relaxed">
+                        Both AI Overviews and AI Mode are grounded in high quality information from the web.
+                        <strong>Corroborating links are provided</strong> so they can check details and learn the
+                        importance of exploring sources.
+                        <br><br>
+                        <em>Note: Under 18 year olds receive Directed Disclaimers which encourage them to check
+                            important information.</em>
+                    </p>
+                </div>
+
+                <!-- NEW SECTION: GOOGLE LENS -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-200 mb-12">
+                    <div class="flex flex-col md:flex-row gap-8 items-start">
+                        <div class="text-5xl hidden md:block">📷</div>
+                        <div class="flex-grow">
+                            <h3 class="text-2xl font-bold text-gray-900 mb-3">Use Google Lens to discover the world</h3>
+                            <p class="text-gray-700 mb-6 leading-relaxed">
+                                Google Lens helps you explore what you see around you, from identifying a cloud in the
+                                sky to learning about something you find in nature.
+                                Simply point the camera, ask a question, and AI Overviews will respond with a helpful
+                                answer. AI Mode is then ready for any follow up questions.
+                            </p>
+
+                            <!-- Activity Box -->
+                            <div class="bg-green-50 border-l-4 border-green-500 p-5 rounded-r-xl">
+                                <h4 class="font-bold text-green-800 flex items-center gap-2 mb-2">
+                                    <span>🌿</span> ACTIVITY IDEA: “Lens Safari”
+                                </h4>
+                                <p class="text-sm text-green-700">
+                                    Head outside together for a “Lens Safari”. Bring a notebook and take turns using
+                                    Google Lens to discover the names of plants, insects, or birds you spot.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEW SECTION: MORE WAYS TO USE LENS -->
+                <div class="mb-16 text-left">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6 uppercase tracking-wider border-b pb-2">More Ways to
+                        Use Lens</h3>
+
+                    <!-- 1. Learn at Home -->
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-200 mb-8">
+                        <div class="flex items-start gap-4 mb-4">
+                            <span class="text-4xl">🏠</span>
+                            <div>
+                                <h4 class="text-2xl font-bold text-indigo-900">Use Lens to learn at home</h4>
+                                <p class="text-gray-600 mt-2 leading-relaxed">
+                                    You can also use Lens to support learning at home. Start by scanning a problem to
+                                    get step-by-step explanations designed to help <strong>you</strong> work towards a
+                                    solution.
+                                    From there, you can use AI Mode to ask clarifying questions and surface insights
+                                    that build on your understanding.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Activity Box -->
+                        <div class="bg-indigo-50 border-l-4 border-indigo-500 p-5 rounded-r-xl ml-0 md:ml-14">
+                            <h4 class="font-bold text-indigo-800 flex items-center gap-2 mb-2">
+                                <span>📚</span> ACTIVITY IDEA: “Homework Team-Up”
+                            </h4>
+                            <p class="text-sm text-indigo-700">
+                                Pick a question from a textbook and try solving it together. Use Google Lens side by
+                                side, talk about what it shows, and decide together if the information feels accurate
+                                and reliable.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 2. Grid for Live, Laptop, Translate, Arts -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                        <!-- Search Live -->
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+                            <div class="text-4xl mb-4">🎙️</div>
+                            <h4 class="text-xl font-bold text-gray-900 mb-3">Start a chat with Search Live</h4>
+                            <p class="text-gray-600 text-sm leading-relaxed">
+                                You can use your cameras to ask questions about a tricky concept and get instant audio
+                                responses, with helpful on-screen content & links from across the web. It turns
+                                curiosity into a two-way conversation, helping you learn and explore as you go.
+                            </p>
+                        </div>
+
+                        <!-- Laptop -->
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+                            <div class="text-4xl mb-4">💻</div>
+                            <h4 class="text-xl font-bold text-gray-900 mb-3">Use Lens on your laptop</h4>
+                            <p class="text-gray-600 text-sm leading-relaxed">
+                                If you don't have access to a mobile device, Google Lens is also available in the Chrome
+                                browser. Highlight any text or image on screen to search with Lens directly in Chrome.
+                                You’ll see AI Overviews and links to reliable sources, all in one place. AI Mode is then
+                                ready for all your follow up questions.
+                            </p>
+                        </div>
+
+                        <!-- NEW: Translate -->
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+                            <div class="text-4xl mb-4">🈯</div>
+                            <h4 class="text-xl font-bold text-gray-900 mb-3">Explore new languages</h4>
+                            <p class="text-gray-600 text-sm leading-relaxed">
+                                Lens can also act as your personal translator for learning new languages. Point the
+                                camera at written or printed words in another language and see instant translations on
+                                screen in real time.
+                            </p>
+                        </div>
+
+                        <!-- NEW: Arts & Culture -->
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+                            <div class="text-4xl mb-4">🎨</div>
+                            <h4 class="text-xl font-bold text-gray-900 mb-3">Explore arts & culture</h4>
+                            <p class="text-gray-600 text-sm leading-relaxed mb-4">
+                                AI in the Google Arts & Culture app allows you to learn more about arts, history,
+                                people, and wonders of our world in new and interactive ways.
+                            </p>
+                            <div
+                                class="bg-yellow-50 p-3 rounded-lg border-l-4 border-yellow-500 text-xs text-yellow-800">
+                                <strong>ACTIVITY IDEA:</strong> Open the Google Arts & Culture app and search for the
+                                "Moving Paintings × Fukuda Art Museum" experiment. Pick your favourite picture, tap to
+                                bring it to life, and explore the story it tells.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEW SECTION: NOTEBOOKLM & GEMINI -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16 text-left">
+                    <!-- NotebookLM -->
+                    <div
+                        class="bg-white p-8 rounded-2xl shadow-md border-t-8 border-orange-400 hover:shadow-lg transition">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="text-3xl">📓</span>
+                            <h3 class="text-2xl font-bold text-gray-900">NotebookLM</h3>
+                        </div>
+                        <p class="text-gray-600 leading-relaxed mb-4">
+                            NotebookLM helps you continue to explore and organise what you’ve been learning, using
+                            <strong>only the information you upload</strong> to form its responses.
+                        </p>
+                        <p class="text-gray-600 leading-relaxed text-sm">
+                            You can add your carefully crafted notes, handouts, or even videos to summarise key ideas,
+                            make connections between topics, and prepare for projects or exams.
+                        </p>
+                    </div>
+
+                    <!-- Gemini -->
+                    <div
+                        class="bg-gradient-to-br from-purple-50 to-white p-8 rounded-2xl shadow-md border-t-8 border-purple-500 hover:shadow-lg transition">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="text-3xl">✨</span>
+                            <h3 class="text-2xl font-bold text-gray-900">Get inspired with Gemini</h3>
+                        </div>
+                        <p class="text-gray-600 leading-relaxed mb-4">
+                            Whether you want to understand a complex topic however you learn best (like with images or
+                            examples), or get creative inspiration, Gemini makes it easy with a specific experience for
+                            young learners.
+                        </p>
+                        <div
+                            class="bg-purple-100 p-3 rounded-lg text-xs text-purple-800 font-bold border border-purple-200">
+                            🛡️ Safety Note: Gemini offers additional safety guardrails and onboarding aimed at young
+                            people created in partnership with child safety & development experts.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="inline-block p-3 bg-white rounded-full shadow-md mb-6"><span class="text-3xl">🔭</span></div>
+            <h2 class="text-4xl font-bold mb-6">Thinking Like a Scientist</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+                <div class="bg-white p-6 rounded-xl border-t-4 border-red-500">
+                    <h3 class="font-bold text-lg mb-2">Question Authority</h3>
+                    <p class="text-sm text-gray-600">AI can hallucinate.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl border-t-4 border-yellow-500">
+                    <h3 class="font-bold text-lg mb-2">Demand Evidence</h3>
+                    <p class="text-sm text-gray-600">Check the source.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl border-t-4 border-green-500">
+                    <h3 class="font-bold text-lg mb-2">Triangulate</h3>
+                    <p class="text-sm text-gray-600">Use 3 sources.</p>
+                </div>
+            </div>
+
+            <!-- NEW INTERACTIVE SOURCE TRIANGULATION SECTION -->
+            <div id="source-triangulation-info" class="mt-16 text-left">
+                <div class="text-center mb-8">
+                    <span
+                        class="text-sm font-bold text-indigo-600 tracking-wider uppercase bg-indigo-100 px-3 py-1 rounded-full">Deep
+                        Dive</span>
+                    <h3 class="text-3xl font-bold text-gray-900 mt-3">Mastering Source Triangulation</h3>
+                    <p class="text-gray-600 mt-2">Click the tabs to learn how to verify information like a pro.</p>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                    <!-- Tabs -->
+                    <div class="flex flex-wrap border-b border-gray-200">
+                        <div class="tri-tab flex-1 text-center active" onclick="showTriTab('yellow-flags')">1. Yellow
+                            Flags 🚩</div>
+                        <div class="tri-tab flex-1 text-center" onclick="showTriTab('original-source')">2. The Original
+                            🔍</div>
+                        <div class="tri-tab flex-1 text-center" onclick="showTriTab('domain-check')">3. Reality Check 🧱
+                        </div>
+                        <div class="tri-tab flex-1 text-center" onclick="showTriTab('ai-output')">4. AI Output 🤖</div>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="p-8">
+                        <!-- Tab 1: Yellow Flags -->
+                        <div id="tri-yellow-flags" class="tri-content active">
+                            <h4 class="text-2xl font-bold text-red-600 mb-4">Treat single sources as "Yellow Flags"</h4>
+                            <p class="text-gray-700 mb-4 leading-relaxed">
+                                In a recent video, <a href="https://youtu.be/o4I_hOz_MLw" target="_blank"
+                                    class="text-blue-600 hover:underline font-bold">"How to Tell What’s Real
+                                    Online"</a>, Neil deGrasse Tyson suggests that a single piece of information isn't
+                                necessarily false, but it isn't verified yet. It's a <strong>"Yellow Flag"</strong>.
+                            </p>
+                            <ul class="list-disc pl-6 space-y-2 text-gray-600">
+                                <li><strong>The Verification Rule:</strong> If a claim interests you, you MUST find
+                                    another place to verify it.</li>
+                                <li><strong>Consensus vs. Cherry-Picking:</strong> Don't just look for one study that
+                                    agrees with you. Look for the <em>consensus</em> (what most experts say).</li>
+                            </ul>
+
+                            <!-- GPS Analogy -->
+                            <div
+                                class="mt-6 bg-indigo-50 p-4 rounded-xl border border-indigo-100 flex items-center gap-4">
+                                <div class="text-4xl">📡</div>
+                                <div>
+                                    <h5 class="font-bold text-indigo-900">The GPS Analogy</h5>
+                                    <p class="text-sm text-indigo-800">One satellite only gives you a huge 50-mile
+                                        circle (Yellow Flag). You need <strong>3 satellites</strong> to lock onto your
+                                        precise blue dot location. Truth works the same way!</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab 2: Original Source -->
+                        <div id="tri-original-source" class="tri-content">
+                            <h4 class="text-2xl font-bold text-blue-600 mb-4">Triangulate back to the "Original"</h4>
+                            <p class="text-gray-700 mb-4 leading-relaxed">
+                                Don't rely on clips or commentary. Social media posts are often just snippets surrounded
+                                by opinion.
+                            </p>
+                            <ul class="list-disc pl-6 space-y-2 text-gray-600">
+                                <li><strong>Bypass the Middleman:</strong> Find the content in its original format and
+                                    length.</li>
+                                <li><strong>Contextual Check:</strong> A 10-second clip can be misleading. Watch the
+                                    full video to see the speaker's actual intent.</li>
+                            </ul>
+
+                            <!-- Telephone Game Analogy -->
+                            <div class="mt-6 bg-blue-50 p-4 rounded-xl border border-blue-100 flex items-center gap-4">
+                                <div class="text-4xl">☎️</div>
+                                <div>
+                                    <h5 class="font-bold text-blue-900">The "Telephone Game"</h5>
+                                    <p class="text-sm text-blue-800">Social media is a massive game of Telephone. By the
+                                        time a viral clip reaches you, the meaning has changed. Go straight to the first
+                                        person to hear the truth.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab 3: Domain Knowledge -->
+                        <div id="tri-domain-check" class="tri-content">
+                            <h4 class="text-2xl font-bold text-green-600 mb-4">Triangulate against "Real World" Rules
+                            </h4>
+                            <p class="text-gray-700 mb-4 leading-relaxed">
+                                AI can trick the eye, but it often fails at physics and specific details. Use
+                                "Domain-Specific" knowledge to spot fakes.
+                            </p>
+                            <ul class="list-disc pl-6 space-y-2 text-gray-600">
+                                <li><strong>The Expert Check:</strong> A bricklayer would notice fake masonry. A nurse
+                                    would spot a fake medical scene.</li>
+                                <li><strong>Physical Consistency:</strong> Does the lighting match? Do the shadows make
+                                    sense? Are mechanical parts "mangled"?</li>
+                            </ul>
+
+                            <!-- Glitchy Game Analogy -->
+                            <div
+                                class="mt-6 bg-green-50 p-4 rounded-xl border border-green-100 flex items-center gap-4">
+                                <div class="text-4xl">👾</div>
+                                <div>
+                                    <h5 class="font-bold text-green-900">The "Glitchy Video Game"</h5>
+                                    <p class="text-sm text-green-800">AI images are like video games with bugs. The
+                                        graphics look great at first glance (4K!), but if you look closely, you'll find
+                                        "glitches" where reality breaks.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab 4: AI Output -->
+                        <div id="tri-ai-output" class="tri-content">
+                            <h4 class="text-2xl font-bold text-purple-600 mb-4">Triangulate the AI Output</h4>
+                            <p class="text-gray-700 mb-4 leading-relaxed">
+                                LLMs "assemble words," they don't think. They can be flat-out wrong.
+                            </p>
+                            <ul class="list-disc pl-6 space-y-2 text-gray-600">
+                                <li><strong>The Search Engine Method:</strong> Treat AI as a tool to <em>find</em>
+                                    sources, not the source itself.</li>
+                                <li><strong>Click the Links:</strong> Don't trust the text generated by the bot. Click
+                                    the provided citations to assemble your own answer.</li>
+                                <li><strong>Institutional Weight:</strong> Trust .edu and .gov sites more than random
+                                    blogs.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Two New Activities -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                    <div class="bg-yellow-50 border-2 border-yellow-200 p-6 rounded-xl">
+                        <h5 class="font-bold text-yellow-900 text-lg mb-2">🕵️ Activity 1: The "Link Hunter"</h5>
+                        <p class="text-sm text-yellow-800 mb-2"><strong>Goal:</strong> Catch the AI making stuff up (AI
+                            hallucinations).</p>
+                        <p class="text-xs text-gray-600">Ask an AI a complex historical question and ask for sources.
+                            Verify: 1) Do the links exist? 2) Does the text actually support the claim?</p>
+                    </div>
+                    <div class="bg-purple-50 border-2 border-purple-200 p-6 rounded-xl">
+                        <h5 class="font-bold text-purple-900 text-lg mb-2">👓 Activity 2: The "Expert Lens"</h5>
+                        <p class="text-sm text-purple-800 mb-2"><strong>Goal:</strong> Practice domain-specific
+                            scrutiny.</p>
+                        <p class="text-xs text-gray-600">Assign roles (Architect, Physicist, Fashion Designer) and
+                            analyze an AI image ONLY through that lens. Does the building make sense? Do the shadows
+                            align?</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- SECTION 5: TRIANGULATION LAB -->
+    <section id="triangulation" class="slide-section bg-white border-4 border-blue-50">
+        <div class="max-w-5xl mx-auto w-full">
+            <div class="text-center mb-8">
+                <h2 class="text-4xl font-bold text-blue-900">Lab: Source Triangulation</h2>
+                <p class="text-gray-600">Verify this suspicious claim using 3 data points.</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-1">
+                    <div class="bg-red-50 border-2 border-red-200 p-6 rounded-xl text-center">
+                        <div class="text-5xl mb-4">🦈</div>
+                        <h3 class="text-xl font-bold mb-2">"Sharks in Volcanoes!"</h3>
+                        <p class="text-sm text-gray-600 mb-6">Claim: Sharks found swimming in active lava.</p>
+                        <div id="status-indicator"
+                            class="px-4 py-2 bg-gray-300 text-gray-600 font-bold rounded-full text-sm">Status:
+                            Unverified</div>
+                    </div>
+                </div>
+                <div class="lg:col-span-2">
+                    <div class="bg-gray-900 text-white p-8 rounded-xl shadow-2xl">
+                        <div class="grid grid-cols-1 gap-4">
+                            <div id="tool-1"
+                                class="bg-gray-800 p-4 rounded-lg flex justify-between cursor-pointer opacity-50 hover:opacity-100"
+                                onclick="verifyStep(1)">
+                                <div>
+                                    <h4 class="font-bold text-blue-400">1. Check Author</h4>
+                                </div>
+                                <div class="check-mark">?</div>
+                            </div>
+                            <div id="tool-2"
+                                class="bg-gray-800 p-4 rounded-lg flex justify-between cursor-pointer opacity-50 hover:opacity-100"
+                                onclick="verifyStep(2)">
+                                <div>
+                                    <h4 class="font-bold text-yellow-400">2. Cross Check</h4>
+                                </div>
+                                <div class="check-mark">?</div>
+                            </div>
+                            <div id="tool-3"
+                                class="bg-gray-800 p-4 rounded-lg flex justify-between cursor-pointer opacity-50 hover:opacity-100"
+                                onclick="verifyStep(3)">
+                                <div>
+                                    <h4 class="font-bold text-green-400">3. Inspect Image</h4>
+                                </div>
+                                <div class="check-mark">?</div>
+                            </div>
+                        </div>
+                        <div id="final-verdict" class="mt-6 p-4 bg-gray-800 rounded-lg text-center hidden">
+                            <p class="text-green-400 font-bold">CLAIM DEBUNKED</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 6: RESPONSIBILITY -->
+    <section id="responsibility" class="slide-section bg-yellow-50">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-4xl font-bold mb-10 text-yellow-800">Responsible AI Use</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+                <div class="bg-white p-8 rounded-xl shadow-md border-b-4 border-blue-500">
+                    <h3 class="text-2xl font-bold mb-4">For Students 🎓</h3>
+                    <ul class="space-y-3 text-gray-600">
+                        <li>✅ Use AI to brainstorm, not to write.</li>
+                        <li>✅ Always check facts.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-md border-b-4 border-green-500">
+                    <h3 class="text-2xl font-bold mb-4">Family Talk 🏠</h3>
+                    <p class="text-sm text-gray-500 mb-4">"If you could invent a new tech to explore, what would it be?"
+                    </p>
+                </div>
+            </div>
+            <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
+                class="mt-12 text-blue-600 font-bold hover:underline">Back to Top</button>
+        </div>
+    </section>
+
+    <script>
+        function scrollToSection(id) { document.getElementById(id).scrollIntoView({ behavior: 'smooth' }); updateNavDots(id); }
+        function updateNavDots(activeId) { document.querySelectorAll('.nav-dot').forEach(dot => dot.classList.remove('active')); }
+
+        // QUIZ
+        const answers = { 1: 'B', 2: 'B', 3: 'C' };
+        function checkAnswer(qNum, choice, btnElement) {
+            const feedback = document.getElementById(`feedback-${qNum}`);
+            const buttons = btnElement.closest('.grid').querySelectorAll('button');
+            buttons.forEach(btn => btn.disabled = true);
+            if (choice === answers[qNum]) { btnElement.classList.add('correct'); feedback.innerHTML = getCorrectText(qNum); }
+            else { btnElement.classList.add('incorrect'); buttons.forEach(btn => { if (btn.getAttribute('onclick').includes(`'${answers[qNum]}'`)) btn.classList.add('correct'); }); feedback.innerHTML = getIncorrectText(qNum); }
+            feedback.classList.remove('hidden'); feedback.classList.add('fade-in');
+            document.getElementById('progress-bar').style.width = `${(qNum / 3) * 100}%`;
+        }
+        function getCorrectText(qNum) {
+            if (qNum === 1) return `<p class="font-bold text-green-800">Correct! It's 11 Days.</p><button class="mt-4 bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700" onclick="nextQuestion(${qNum + 1})">Next ➡️</button>`;
+            if (qNum === 2) return `<p class="font-bold text-green-800">Correct! It's 31 Years.</p><button class="mt-4 bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700" onclick="nextQuestion(${qNum + 1})">Next ➡️</button>`;
+            if (qNum === 3) return `<p class="font-bold text-cyan-800">CORRECT: The Ice Age!</p><p class="text-cyan-700">1 Trillion seconds is <strong>31,709 Years</strong>.</p><button class="bg-gray-900 text-white px-8 py-3 rounded-full hover:bg-gray-800 font-bold shadow-lg" onclick="showFinalChart()">Click here</button>`;
+        }
+        function getIncorrectText(qNum) {
+            if (qNum === 1) return getCorrectText(1).replace("Correct!", "Not quite!");
+            if (qNum === 2) return getCorrectText(2).replace("Correct!", "Not quite!");
+            if (qNum === 3) return getCorrectText(3).replace("CORRECT: The Ice Age!", "Not quite!");
+        }
+        function nextQuestion(nextQ) { document.getElementById(`q${nextQ - 1}`).classList.add('hidden'); document.getElementById(`q${nextQ}`).classList.remove('hidden'); document.getElementById(`q${nextQ}`).classList.add('fade-in'); }
+        function showFinalChart() { document.getElementById('q3').classList.add('hidden'); document.getElementById('q-chart').classList.remove('hidden'); document.getElementById('q-chart').classList.add('fade-in'); renderTimeChart(); }
+
+        // CHARTS
+        function renderTimeChart() {
+            new Chart(document.getElementById('timeScaleChart').getContext('2d'), { type: 'bar', data: { labels: ['1M (Vacation)', '1B (Generation)', '1T (Ice Age)'], datasets: [{ data: [0.03, 31, 31000], backgroundColor: ['#4ade80', '#60a5fa', '#f87171'] }] }, options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', scales: { x: { type: 'logarithmic', min: 0.01 } }, plugins: { legend: { display: false } } } });
+        }
+
+        // --- REFACTORED SEARCH STREAM LOGIC (NO REPEATS) ---
+        const commonSearches = ["Weather", "Maps", "Youtube", "News", "Translate", "Calculator", "Movies", "Photos", "Drive", "Gmail", "Calendar", "Docs", "Music", "Timer", "Stopwatch"];
+
+        // Large pool of 50+ unique, kid-friendly "New" queries
+        const newSearchesPool = [
+            "Do penguins have knees?", "How to paint with clouds", "Why is the sky green in my dream?", "Recipe for invisible ink", "Can a robot dance ballet?",
+            "What does space smell like?", "Can giraffes wear ties?", "Why do onions make us cry?", "Is cereal a soup?", "How to train a dragon (real)",
+            "Do fish get thirsty?", "Can I build a house out of legos?", "What happens if you microwave a grape?", "How to speak dolphin", "Why don't birds get electrocuted?",
+            "Can turtles come out of their shells?", "How heavy is a cloud?", "Can you sneeze with eyes open?", "Do trees talk to each other?", "Why is pizza round?",
+            "Can I dig to China?", "How to become a professional ninja", "Do astronauts wear pajamas?", "Can a kangaroo jump backwards?", "Why is the ocean salty?",
+            "How to grow a pizza tree", "Do bees sleep?", "Can I adopt a cloud?", "What is the color of a mirror?", "Why do feet smell like cheese?",
+            "Can I fly with balloons?", "How to teleport an apple", "Do cats have belly buttons?", "Why is snow white?", "Can a human outrun a T-Rex?",
+            "How to breathe underwater", "Do worms have eyes?", "Why do we have eyebrows?", "Can I live on Mars?", "How to make a cardboard time machine",
+            "Do ants take naps?", "Why are flamingos pink?", "Can I catch a star?", "How to make slime without glue", "Do sharks blink?",
+            "Why is the moon following me?", "Can I touch a rainbow?", "How to build a robot dog", "Do plants like music?", "Why does popcorn pop?"
+        ];
+
+        // Shuffle function (Fisher-Yates)
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        // Shuffle on load
+        let shuffledNewSearches = shuffle([...newSearchesPool]);
+        let searchIndex = 0;
+
+        function generateSearchStream() {
+            const container = document.getElementById('search-stream-container');
+            container.innerHTML = '';
+
+            let count = 0;
+            const total = 18;
+
+            const interval = setInterval(() => {
+                if (count >= total) {
+                    clearInterval(interval);
+                    return;
+                }
+
+                // Every 6th is new (approx 16%)
+                const isNew = (count + 1) % 6 === 0;
+                let text;
+
+                if (isNew) {
+                    // Pick next from shuffled list
+                    text = shuffledNewSearches[searchIndex % shuffledNewSearches.length];
+                    searchIndex++; // Increment global index so next click gets next item
+                } else {
+                    text = commonSearches[Math.floor(Math.random() * commonSearches.length)];
+                }
+
+                const bubble = document.createElement('div');
+                bubble.className = `search-bubble ${isNew ? 'new-query' : ''}`;
+                bubble.innerHTML = isNew ? `✨ ${text}` : text;
+
+                container.appendChild(bubble);
+                count++;
+            }, 100);
+        }
+
+        // ML VISUALIZATION (Fixed Boundary)
+        let mlChartInstance;
+        function initMLChart() {
+            const ctx = document.getElementById('mlChart').getContext('2d');
+            const data1 = Array.from({ length: 20 }, () => ({ x: Math.random() * 40 + 5, y: Math.random() * 40 + 5 }));
+            const data2 = Array.from({ length: 20 }, () => ({ x: Math.random() * 40 + 55, y: Math.random() * 40 + 55 }));
+            mlChartInstance = new Chart(ctx, { type: 'scatter', data: { datasets: [{ label: 'Small Animals (e.g. Cats)', data: data1, backgroundColor: 'red' }, { label: 'Big Animals (e.g. Dogs)', data: data2, backgroundColor: 'blue' }, { label: 'The Pattern Line', data: [], type: 'line', borderColor: 'green', borderWidth: 2, fill: false, showLine: true, pointRadius: 0 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { display: false } }, plugins: { legend: { position: 'bottom' } } } });
+        }
+        function trainModel() {
+            // Draw separating line from (0,100) to (100,0)
+            mlChartInstance.data.datasets[2].data = [{ x: 0, y: 100 }, { x: 100, y: 0 }];
+            mlChartInstance.update();
+            document.getElementById('ml-feedback').innerHTML = "<strong class='text-green-600'>Model Trained!</strong> The AI found a line that separates the two groups.";
+        }
+        window.onload = function () { initMLChart(); };
+
+        // HIERARCHY LOGIC
+        const hierarchyData = {
+            'ai': { title: 'Artificial Intelligence (AI)', desc: 'The big umbrella! Any technique that enables computers to mimic human intelligence.', example: 'Example: A video game enemy that knows how to follow you.' },
+            'ml': { title: 'Machine Learning (ML)', desc: 'A subset of AI. It gives computers the ability to learn without being explicitly programmed.', example: 'Example: Your email spam filter.' },
+            'dl': { title: 'Deep Learning (DL)', desc: 'A subset of ML. It uses "Neural Networks" inspired by the human brain to learn huge amounts of data.', example: 'Example: Face ID unlocking your phone.' },
+            'gen': { title: 'Generative AI', desc: 'A subset of DL. It doesn\'t just analyze data, it CREATES new data (images, text, audio).', example: 'Example: Gemini, MusicFX.' }
+        };
+        function selectHierarchy(key) {
+            document.querySelectorAll('.circle').forEach(c => c.classList.remove('active'));
+            document.getElementById(`c-${key}`).classList.add('active');
+            document.getElementById('h-title').innerText = hierarchyData[key].title;
+            document.getElementById('h-desc').innerText = hierarchyData[key].desc;
+            document.getElementById('h-example').innerText = hierarchyData[key].example;
+        }
+
+        // INTERACTIVE COMPARISON
+        function runComparison(type) {
+            const btn = document.querySelector(`#card-${type} button`);
+            const loader = document.getElementById(`loader-${type}`);
+            const output = document.getElementById(`out-${type}`);
+            btn.classList.add('hidden'); loader.style.display = 'block';
+            setTimeout(() => { loader.style.display = 'none'; output.style.display = 'block'; }, 1500);
+        }
+
+        // --- NEW: GEN CAPABILITIES INTERACTION ---
+        function showGenCapability(mode) {
+            document.querySelectorAll('.cap-btn').forEach(b => b.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            document.getElementById('cap-default').classList.add('hidden');
+            const content = document.getElementById('cap-content');
+            content.classList.remove('hidden');
+            const resultBox = document.getElementById('cap-result');
+            const promptSpan = document.getElementById('cap-prompt');
+
+            if (mode === 'text') {
+                promptSpan.innerText = "Write a haiku about a robot.";
+                resultBox.innerHTML = '<div class="font-mono text-green-400 text-lg typing-cursor">Metal heart beats slow,<br>Wires hum a quiet tune,<br>Life in circuits flows.</div>';
+            } else if (mode === 'image') {
+                promptSpan.innerText = "A futuristic city at sunset.";
+                // Updated Image Link with Crop Resize Parameter for better quality
+                resultBox.innerHTML = '<img src="https://fast.wistia.com/embed/medias/7j55nnc12t/swatch?image_crop_resized=1280x720" class="w-full h-full object-cover rounded-lg shadow-lg" />';
+            } else if (mode === 'video') {
+                promptSpan.innerText = "Generate a cinematic video."; // Updated Prompt
+                // REPLACED: CSS Animation -> Wistia Player
+                resultBox.innerHTML = '<wistia-player media-id="be0ruvkjze" aspect="1.7777777777777777"></wistia-player>';
+            } else if (mode === 'code') {
+                promptSpan.innerText = "Create a blue button.";
+                resultBox.innerHTML = '<div class="flex flex-col items-center gap-4"><div class="bg-gray-800 p-2 rounded text-xs font-mono text-gray-300 w-full">button {<br>&nbsp;&nbsp;background: blue;<br>&nbsp;&nbsp;color: white;<br>}</div><button class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition transform hover:scale-110 shadow-xl">I AM ALIVE!</button></div>';
+            }
+        }
+
+        // MIXER & TRIANGULATION
+        let b1 = false, b2 = false;
+        function toggleBeat(id) {
+            if (id === 'beat1') b1 = !b1; else b2 = !b2;
+            document.getElementById(id).classList.toggle('bg-purple-600'); document.getElementById(id).classList.toggle('text-white');
+            const res = document.getElementById('gen-result');
+            if (b1 && b2) { res.innerHTML = '<span class="text-purple-600 font-bold animate-pulse">✨ Generating: "Chicago Hip Hop beats with violins" 🎶</span>'; res.className = "h-32 bg-purple-50 rounded-xl flex items-center justify-center border-2 border-purple-500 text-center p-4"; }
+            else { res.innerHTML = '<p class="text-gray-400 font-bold">Select inputs...</p>'; res.className = "h-32 bg-gray-100 rounded-xl flex items-center justify-center border-2 border-dashed border-gray-300"; }
+        }
+
+        // NEW: TRIANGULATION TAB LOGIC
+        function showTriTab(id) {
+            // Remove active from all tabs
+            document.querySelectorAll('.tri-tab').forEach(t => t.classList.remove('active'));
+            // Add active to clicked tab
+            event.target.classList.add('active');
+
+            // Hide all content
+            document.querySelectorAll('.tri-content').forEach(c => c.classList.remove('active'));
+            // Show correct content
+            document.getElementById(`tri-${id}`).classList.add('active');
+        }
+
+        let steps = [false, false, false];
+        function verifyStep(n) {
+            if (steps[n - 1]) return; steps[n - 1] = true;
+            const el = document.getElementById(`tool-${n}`); el.classList.remove('opacity-50'); el.classList.add('bg-gray-700', 'border-l-4', 'border-green-400'); el.querySelector('.check-mark').innerHTML = "✓";
+            if (steps.every(Boolean)) { document.getElementById('final-verdict').classList.remove('hidden'); document.getElementById('final-verdict').classList.add('animate-bounce'); document.getElementById('status-indicator').innerText = "Status: DEBUNKED"; document.getElementById('status-indicator').className = "px-4 py-2 bg-green-500 text-white font-bold rounded-full text-sm"; }
+        }
+    </script>
+</body>
+
+</html>
